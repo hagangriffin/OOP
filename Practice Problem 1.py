@@ -14,5 +14,20 @@ while count != 0:
 
 grade_average = grades_points / len(grade_list)
 
+if grade_average >= 90:
+    print("You got an A")
+
+elif 80 <= grade_average < 90:
+    print("You got a B")
+
+elif 70 <= grade_average < 80:
+    print("You got a C")
+
+elif 60 <= grade_average < 70:
+    print("You got a D")
+
+else:
+    print("\nYou got an F")
+
 print("\nYour grade average is: ", grade_average)
 print("\nYour total points are: ", grades_points)
