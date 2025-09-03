@@ -12,18 +12,18 @@ while number_of_answers != 0:
     number_of_answers -= 1
     number_number += 1
 
-if ask_great_or_less == "greatest" or "Greatest":
+if ask_great_or_less.lower() == "greatest":
     for e in answer_list:
         if e > current_high:
             current_high = e
-    print("The greatest number is: " + str(current_high))
+    print("\nThe greatest number is: " + str(current_high))
 
-if ask_great_or_less == "least" or "Least":
+elif ask_great_or_less.lower() == "least":
     current_low = answer_list[0]
     for e in answer_list:
         if e < current_low:
             current_low = e
-    print("The least number is: " + str(current_low))
+    print("\nThe least number is: " + str(current_low))
 
 else:
-    print("Invalid answer")
+    print("\nInvalid answer")
