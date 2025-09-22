@@ -31,3 +31,5 @@ else:
 
 print("\nYour grade average is: ", grade_average)
 print("\nYour total points are: ", grades_points)
+
+print("What time is it?")
