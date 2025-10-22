@@ -12,7 +12,7 @@ class Admin:
     def create_invoice(self):
         invoice = Invoice()
         invoice.create_invoice()
-        return invoice
+        invoices.append(invoice)
 #Print Inventory
     def check_inventory(self):
         print("\nChecking Inventory...")
@@ -183,15 +183,16 @@ class Scheduling:
         self.total_scheduled = len(self.wait_list)
 
 #Add to Schedule
-    def add_schedule(self, name = "", phone = "", email = ""):
-        self.wait_list.update({self.name: {"Phone: ": self.phone, "Email: ": self.email}})
-#Remove Completed Job From Schedule
-    def complete_from_schedule(self):
+    def add_schedule(self, name, phone, email):
+        self.wait_list.update({name: {"Phone: ": phone, "Email: ": email}})
 
 #Remove Cancelled Job From Schedule
-    def remove_schedule(self):
+    def remove_from_schedule(self, name):
+        for e in self.wait_list:
+            if e.name == name:
+                self.wait_list.pop(e)
 
-
+invoices = []
 inventory = Inventory()
 schedule = Scheduling()
 save_list = {}
