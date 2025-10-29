@@ -21,6 +21,7 @@ def show(x):
 
         else:
             answer.insert(tk.INSERT, x)
+
     except:
         answer.delete(1.0, END)
 
@@ -55,14 +56,10 @@ eq = Button(top, text="=", width=10, height=5, command=lambda: show("="))
 eq.place(x=175, y=450)
 div = Button(top, text="/", width=10, height=5, command=lambda: show("/"))
 div.place(x=250, y=450)
-
 clear = Button(top, text="C", width=10, height=5, command=lambda: show("C"))
 clear.place(x=325, y=150)
-
 back = Button(top, text="<-", width=10, height=5, command=lambda: show("<-"))
 back.place(x=325,y=225)
-
-
 
 top.mainloop()
 

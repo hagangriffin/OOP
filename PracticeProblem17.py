@@ -1,36 +1,26 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import tkinter
+root = tkinter.Tk()
+root.resizable(False, False)
+myCanvas = tkinter.Canvas(root, bg="white", height=600, width=800)
+shape1 = myCanvas.create_oval(20, 20, 100, 100, fill="blue")
+#initialize the constants xx, yy
+xx=yy = 3
+def move_shape():
+    global xx, yy
+#move the shape with the constant xx, yy
+myCanvas.move(shape1, xx, yy)
+#get the current coordinates of the shape
+(x1, y1, x2, y2) = myCanvas.coords(shape1)
+#check the boundaries of the coordinates and change the constants xx, yy
+if x1 <= 0 or x2 >= 800:
+    xx = -xx
+if y1 <= 0 or y2 >= 600:
+    yy = -yy
+#call the function recursively
+myCanvas.after(30, move_shape())
 
-x = np.array(["c1", "c2", "c3", "c4"])
-y = np.array([80, 100, 62, 76])
+#in the main program call the function move_shape()
+myCanvas.after(10,move_shape())
 
-print(np.mean(y))
-print(np.median(y))
-print(np.std(y))
-
-plt.xlabel("Courses")
-plt.ylabel("grades")
-plt.plot(x, y)
-plt.show()
-
-mylabels = ["a1", "a2", "a3", "a4"]
-
-plt.pie(y, labels=mylabels)
-plt.show()
-
-#x = [4, 5, 10, 4, 3, 11, 14 , 8, 10, 12]
-x = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
-y = [21, 19, 24, 17, 16, 25, 24, 22, 21, 21]
-
-plt.scatter(x,y)
-plt.show()
-
-with open("mycourse1.txt") as file_name:
-    array = np.loadtxt(file_name, delimiter=",")
-
-#for i in range(1,len(array)):
-#data1 = i
-print(array)
-stu_list=["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "s12", "s13", "s14", "s15", "s16", "s17", "s18", "s19", "s20"]
-plt.pie(array, labels=stu_list)
-plt.show()
+myCanvas.pack()
+root.mainloop()
