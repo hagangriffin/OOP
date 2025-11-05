@@ -30,23 +30,23 @@ class Invoice:
         self.total_cost = 0.0
         self.eta_days = 0
 #Create Invoice
-    def create_invoice(self):
-        self.inv_id = int(input("What is the invoice ID? "))
-        self.name = input("What is the customer's name? ")
-        self.dob = input("What is the customer's DOB? ")
-        self.phone = input("What is the customer's phone? ")
-        self.email = input("What is the customer's email? ")
-        self.card_number = input("What is the customer's card number? ")
-        self.card_name = input("What is the customer's card name? ")
-        self.card_expiration = input("What is the customer's card expiration? ")
-        self.card_ccv = input("What is the customer's card cvv? ")
-        self.car_make = input("What is the customer's car make? ")
-        self.car_model = input("What is the customer's car model? ")
-        self.car_year = input("What is the customer's car year? ")
-        self.car_color =input("What is the customer's car color? ")
-        self.issue = input("What is the customer's issue?" )
-        self.diag_or_repair = input("Is the invoice for diagnostics or repairs? ")
-        self.est_labor_hrs = int(input("What are the estimated labor hours? "))
+    def create_invoice(self, entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9, entry10, entry11, entry12, entry13, entry14, entry15, entry16):
+        self.inv_id = entry1
+        self.name = entry2
+        self.dob = entry3
+        self.phone = entry4
+        self.email = entry5
+        self.card_number = entry6
+        self.card_name = entry7
+        self.card_expiration = entry8
+        self.card_ccv = entry9
+        self.car_make = entry10
+        self.car_model = entry11
+        self.car_year = entry12
+        self.car_color = entry13
+        self.issue = entry14
+        self.diag_or_repair = entry15
+        self.est_labor_hrs = entry16
         self.total_cost = self.labor_calc()
         self.parts_cost = self.parts_calc()
         self.total_cost = self.total_cost_calc()
@@ -219,20 +219,7 @@ schedules = [schedule]
 
 #STORAGE-------------------------------------------------------------------------------------
 
-stored_invoices = open("invoices.dat", "ab")
-stored_schedule = open("schedule.dat", "ab")
-stored_inventory = open("inventory.dat", "ab")
 
-for inv in invoices:
-    pickle.dump(inv, stored_invoices)
-for sch in schedules:
-    pickle.dump(sch, stored_schedule)
-for invent in inventories:
-    pickle.dump(invent, stored_inventory)
-
-stored_invoices.close()
-stored_schedule.close()
-stored_inventory.close()
 
 #MAIN MENU------------------------------------------------------------------------------------
 
@@ -240,32 +227,180 @@ top = Tk()
 top.geometry("700x500")
 
 dis = Text(width=60, height=15)
-dis.place(x=100, y=100)
+dis.place(x=100, y=50)
+
+def inv_create_win():
+    top1 = tk.Toplevel(top)
+    top1.title("Invoice Creation")
+    top1.geometry("500x575")
+
+    def cr_i():
+        invoice.create_invoice(inv_id_entry, name_entry, dob_entry, phone_entry, email_entry, card_num_entry,
+                               card_name_entry, card_exp_entry, card_cvv_entry, car_make_entry, car_model_entry,
+                               car_year_entry, car_color_entry, issue_entry, diag_repair_entry, labor_hours_entry)
+        dis.insert(tk.INSERT, "Invoice Created Successfully")
+
+    tk.Label(top1, text="Invoice ID:").place(x=10, y=10)
+    inv_id_entry = Entry(top1, width=60)
+    inv_id_entry.place(x=125, y=12)
+
+    tk.Label(top1, text="Name:").place(x=10, y=40)
+    name_entry = Entry(top1, width=60)
+    name_entry.place(x=125, y=42)
+
+    tk.Label(top1, text="DOB:").place(x=10, y=70)
+    dob_entry = Entry(top1, width=60)
+    dob_entry.place(x=125, y=72)
+
+    tk.Label(top1, text="Phone:").place(x=10, y=100)
+    phone_entry = Entry(top1, width=60)
+    phone_entry.place(x=125, y=102)
+
+    tk.Label(top1, text="Email:").place(x=10, y=130)
+    email_entry = Entry(top1, width=60)
+    email_entry.place(x=125, y=132)
+
+    tk.Label(top1, text="Card Number:").place(x=10, y=160)
+    card_num_entry = Entry(top1, width=60)
+    card_num_entry.place(x=125, y=162)
+
+    tk.Label(top1, text="Card Name:").place(x=10, y=190)
+    card_name_entry = Entry(top1, width=60)
+    card_name_entry.place(x=125, y=192)
+
+    tk.Label(top1, text="Card Expiration:").place(x=10, y=220)
+    card_exp_entry = Entry(top1, width=60)
+    card_exp_entry.place(x=125, y=222)
+
+    tk.Label(top1, text="Card CVV:").place(x=10, y=250)
+    card_cvv_entry = Entry(top1, width=60)
+    card_cvv_entry.place(x=125, y=252)
+
+    tk.Label(top1, text="Car Make:").place(x=10, y=280)
+    car_make_entry = Entry(top1, width=60)
+    car_make_entry.place(x=125, y=282)
+
+    tk.Label(top1, text="Car Model:").place(x=10, y=310)
+    car_model_entry = Entry(top1, width=60)
+    car_model_entry.place(x=125, y=312)
+
+    tk.Label(top1, text="Car Year:").place(x=10, y=340)
+    car_year_entry = Entry(top1, width=60)
+    car_year_entry.place(x=125, y=342)
+
+    tk.Label(top1, text="Car Color:").place(x=10, y=370)
+    car_color_entry = Entry(top1, width=60)
+    car_color_entry.place(x=125, y=372)
+
+    tk.Label(top1, text="Issue:").place(x=10, y=400)
+    issue_entry = Entry(top1, width=60)
+    issue_entry.place(x=125, y=402)
+
+    tk.Label(top1, text="Diagnosis or Repair:").place(x=10, y=430)
+    diag_repair_entry = Entry(top1, width=60)
+    diag_repair_entry.place(x=125, y=432)
+
+    tk.Label(top1, text="Est. Labor Hours:").place(x=10, y=460)
+    labor_hours_entry = Entry(top1, width=60)
+    labor_hours_entry.place(x=125, y=462)
+
+    submit = Button(top1, text="Submit", width=20, height=2, command=cr_i)
+    submit.place(x=175, y=500)
 
 def show(x):
     try:
         if x == "ci":
-            invoice.create_invoice()
+            inv_create_win()
+
         elif x == "cin":
             inventory.check_inv()
+
         elif x == "csh":
             schedule.check_schedule()
+
         elif x == "yes":
             inventory.update_inv()
+
         elif x == "no":
             dis.insert(tk.INSERT, "\n\nContinuing...")
+
+        elif x == "save":
+            dis.insert(tk.INSERT, "\n\nSaving...\nSaved...")
+            stored_invoices = open("invoices.dat", "ab")
+            stored_schedule = open("schedule.dat", "ab")
+            stored_inventory = open("inventory.dat", "ab")
+
+            for inv in invoices:
+                pickle.dump(inv, stored_invoices)
+            for sch in schedules:
+                pickle.dump(sch, stored_schedule)
+            for invent in inventories:
+                pickle.dump(invent, stored_inventory)
+
+            stored_invoices.close()
+            stored_schedule.close()
+            stored_inventory.close()
+
+        elif x == "load":
+
+            dis.insert(tk.INSERT, "\n\nLoading...\nLoaded...")
+            stored_invoices = open("invoices.dat", "ab")
+            stored_schedule = open("schedule.dat", "ab")
+            stored_inventory = open("inventory.dat", "ab")
+
+            while True:
+
+                try:
+                    loaded_invoices = pickle.load(stored_invoices)
+                    count = len(invoices)
+                    while count != 0:
+                        invoices.pop()
+                        count -= 1
+
+                    for e in loaded_invoices:
+                        invoices.append(e)
+
+                    dis.insert(tk.INSERT, "Invoices Loaded...")
+
+                except EOFError:
+                    continue
+
+                try:
+                    loaded_schedule = pickle.load(stored_schedule)
+                    schedules.pop()
+                    schedules.append(loaded_schedule)
+
+                    dis.insert(tk.INSERT, "Schedule Loaded...")
+
+                except EOFError:
+                    continue
+
+                try:
+                    loaded_inventory = pickle.load(stored_inventory)
+                    inventories.pop()
+                    inventories.append(loaded_inventory)
+
+                    dis.insert(tk.INSERT, "Inventory Loaded...")
+
+                except EOFError:
+                    continue
+
     except:
         dis.insert(tk.INSERT, "\n\nInvalid Input")
 
-cr_in = Button(top, text="Create Invoice", width=10, height=5, command=lambda: show("ci"))
-cr_in.place(x=110, y=375)
-ch_in = Button(top, text="Check Inventory", width=10, height=5, command=lambda: show("cin"))
-ch_in.place(x=205, y=375)
-ch_sh = Button(top, text="Check Schedule", width=10, height=5, command=lambda: show("csh"))
-ch_sh.place(x=300, y=375)
+cr_in = Button(top, text="Create Invoice", width=20, height=2, command=lambda: show("ci"))
+cr_in.place(x=110, y=305)
+ch_in = Button(top, text="Check Inventory", width=20, height=2, command=lambda: show("cin"))
+ch_in.place(x=110, y=355)
+ch_sh = Button(top, text="Check Schedule", width=20, height=2, command=lambda: show("csh"))
+ch_sh.place(x=110, y=405)
 yes = Button(top, text="Yes", width=10, height=5, command=lambda: show("yes"))
-yes.place(x=395, y=375)
+yes.place(x=395, y=325)
 no = Button(top, text="No", width=10, height=5, command=lambda: show("no"))
-no.place(x=490, y=375)
+no.place(x=490, y=325)
+save = Button(top, text="Save", width=15, height=2, command=lambda: show("save"))
+save.place(x=270, y=305)
+load = Button(top, text="Load", width=15, height=2, command=lambda: show("load"))
+load.place(x=270, y=355)
 
 top.mainloop()
