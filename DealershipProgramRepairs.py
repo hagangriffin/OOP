@@ -105,14 +105,16 @@ class Inventory:
 
 #Check Inventory Stock
     def check_inv(self):
-        dis.insert(tk.INSERT,f"Total Engine Parts: {self.parts['Engine Parts']}")
-        dis.insert(tk.INSERT,f"\nTotal Drivetrain Parts: {self.parts['Drivetrain Parts']}")
-        dis.insert(tk.INSERT,f"\nTotal Electronic Parts: {self.parts['Electronic Parts']}")
-        dis.insert(tk.INSERT,f"\nTotal Interior Parts: {self.parts['Interior Parts']}")
-        dis.insert(tk.INSERT,f"\nTotal Exterior Parts: {self.parts['Exterior Parts']}")
-        dis.insert(tk.INSERT,f"\nTotal Main Frame Parts: {self.parts['Main Frame Parts']}")
+        int_dis.insert(tk.INSERT,f"Total Engine Parts: {self.parts['Engine Parts']}")
+        int_dis.insert(tk.INSERT,f"\nTotal Drivetrain Parts: {self.parts['Drivetrain Parts']}")
+        int_dis.insert(tk.INSERT,f"\nTotal Electronic Parts: {self.parts['Electronic Parts']}")
+        int_dis.insert(tk.INSERT,f"\nTotal Interior Parts: {self.parts['Interior Parts']}")
+        int_dis.insert(tk.INSERT,f"\nTotal Exterior Parts: {self.parts['Exterior Parts']}")
+        int_dis.insert(tk.INSERT,f"\nTotal Main Frame Parts: {self.parts['Main Frame Parts']}")
         if self.parts["Engine Parts"] < 10 or self.parts["Drivetrain Parts"] < 10 or self.parts["Electronic Parts"] < 10 or self.parts["Interior Parts"] < 10 or self.parts["Exterior Parts"] < 10 or self.parts["Main Frame Parts"] < 10:
-            dis.insert(tk.INSERT, "\n\nStock is low... Would you like to order more? Yes/No")
+            int_dis.insert(tk.INSERT, """\n\nStock is low... To order more click "Update Inventory" """)
+        else:
+            int_dis.insert(tk.INSERT, "Stock is up to date...")
 
 #Update Inventory Stock
     def update_inv(self):
@@ -124,7 +126,7 @@ class Inventory:
         if self.parts["Engine Parts"] < 10:
             eng_parts_ordered = order_goal - self.parts["Engine Parts"]
             eng_parts_cost = inventory.eng_parts_price * eng_parts_ordered
-            dis.insert(tk.INSERT,f"\n\nEngine parts stock low... Ordering more stock\nCost of new stock ordered: {str(eng_parts_cost)}")
+            int_dis.insert(tk.INSERT,f"\n\nEngine parts stock low... Ordering more stock\nCost of new stock ordered: {str(eng_parts_cost)}")
             self.parts["Engine Parts"] += eng_parts_ordered
             stock_ordered = True
             type_ordered.append("Engine Parts")
@@ -132,7 +134,7 @@ class Inventory:
         if self.parts["Drivetrain Parts"] < 10:
             dri_parts_ordered = order_goal - self.parts["Drivetrain Parts"]
             dri_parts_cost = inventory.drive_parts_price * dri_parts_ordered
-            dis.insert(tk.INSERT,f"\n\nDrivetrain parts stock low... Ordering more stock\nCost of new stock ordered: {str(dri_parts_cost)}")
+            int_dis.insert(tk.INSERT,f"\n\nDrivetrain parts stock low... Ordering more stock\nCost of new stock ordered: {str(dri_parts_cost)}")
             self.parts["Drivetrain Parts"] += dri_parts_ordered
             stock_ordered = True
             type_ordered.append("Drivetrain Parts")
@@ -140,7 +142,7 @@ class Inventory:
         if self.parts["Electronic Parts"] < 10:
             elec_parts_ordered = order_goal - self.parts["Electronic Parts"]
             elec_parts_cost = inventory.electro_parts_price * elec_parts_ordered
-            dis.insert(tk.INSERT,f"\n\nElectronic parts stock low... Ordering more stock\nCost of new stock ordered: {str(elec_parts_cost)}")
+            int_dis.insert(tk.INSERT,f"\n\nElectronic parts stock low... Ordering more stock\nCost of new stock ordered: {str(elec_parts_cost)}")
             self.parts["Electronic Parts"] += elec_parts_ordered
             stock_ordered = True
             type_ordered.append("Electronic Parts")
@@ -148,7 +150,7 @@ class Inventory:
         if self.parts["Interior Parts"] < 10:
             int_parts_ordered = order_goal - self.parts["Interior Parts"]
             int_parts_cost = inventory.int_parts_price * int_parts_ordered
-            dis.insert(tk.INSERT,f"\n\nInterior parts stock low... Ordering more stock\nCost of new stock ordered: {str(int_parts_cost)}")
+            int_dis.insert(tk.INSERT,f"\n\nInterior parts stock low... Ordering more stock\nCost of new stock ordered: {str(int_parts_cost)}")
             self.parts["Interior Parts"] += int_parts_ordered
             stock_ordered = True
             type_ordered.append("Interior Parts")
@@ -156,7 +158,7 @@ class Inventory:
         if self.parts["Exterior Parts"] < 10:
             ext_parts_ordered = order_goal - self.parts["Exterior Parts"]
             ext_parts_cost = inventory.ext_parts_price * ext_parts_ordered
-            dis.insert(tk.INSERT,f"\n\nExterior parts stock low... Ordering more stock\nCost of new stock ordered: {str(ext_parts_cost)}")
+            int_dis.insert(tk.INSERT,f"\n\nExterior parts stock low... Ordering more stock\nCost of new stock ordered: {str(ext_parts_cost)}")
             self.parts["Exterior Parts"] += ext_parts_ordered
             stock_ordered = True
             type_ordered.append("Exterior Parts")
@@ -164,20 +166,20 @@ class Inventory:
         if self.parts["Main Frame Parts"] < 10:
             main_parts_ordered = order_goal - self.parts["Main Frame Parts"]
             main_parts_cost = inventory.main_frame_parts_price * main_parts_ordered
-            dis.insert(tk.INSERT,f"\n\nMain frame parts stock low... Ordering more stock\nCost of new stock ordered: {str(main_parts_cost)}")
+            int_dis.insert(tk.INSERT,f"\n\nMain frame parts stock low... Ordering more stock\nCost of new stock ordered: {str(main_parts_cost)}")
             self.parts["Main Frame Parts"] += main_parts_ordered
             stock_ordered = True
             type_ordered.append("Main Frame Parts")
             total_cost += main_parts_cost
 
         if stock_ordered:
-            dis.insert(tk.INSERT, f"\n\nTotal cost of parts ordered: {total_cost}")
-            dis.insert(tk.INSERT, "\n\nTypes of parts ordered: ")
+            int_dis.insert(tk.INSERT, f"\n\nTotal cost of parts ordered: {total_cost}")
+            int_dis.insert(tk.INSERT, "\n\nTypes of parts ordered: ")
             for t in type_ordered:
-                dis.insert(tk.INSERT, f"\n{t}")
+                int_dis.insert(tk.INSERT, f"\n{t}")
 
         elif not stock_ordered:
-            dis.insert(tk.INSERT,"\nNo parts were needed")
+            int_dis.insert(tk.INSERT,"\nNo parts were needed")
 
         return self.parts["Engine Parts"], self.parts["Drivetrain Parts"], self.parts["Electronic Parts"], self.parts["Interior Parts"], self.parts["Exterior Parts"], self.parts["Main Frame Parts"]
 
@@ -217,11 +219,7 @@ invoices = []
 inventories = [inventory]
 schedules = [schedule]
 
-#STORAGE-------------------------------------------------------------------------------------
-
-
-
-#MAIN MENU------------------------------------------------------------------------------------
+#MAIN MENU--------------------------------------------------------------------------------------------------------------
 
 top = Tk()
 top.geometry("700x500")
@@ -229,10 +227,144 @@ top.geometry("700x500")
 dis = Text(width=60, height=15)
 dis.place(x=100, y=50)
 
+#SCHEDULE WINDOW--------------------------------------------------------------------------------------------------------
+sch = tk.Toplevel(top)
+sch.geometry("700x500")
+sch.title("Scheduling")
+
+sch_dis = Text(sch, width=60, height=15)
+sch_dis.place(x=100, y=50)
+
+sch.withdraw()
+
+def schedule_window():
+
+    sch.deiconify()
+
+    def sch_show(x):
+        if x == "csh":
+            schedule.check_schedule()
+
+        elif x == "addsh":
+            schedule.add_schedule()
+
+        elif x == "remsh":
+            schedule.remove_schedule()
+
+        elif x == "exit":
+            top.deiconify()
+            sch.iconify()
+
+    ch_sh = Button(sch, text="Check Schedule", width=20, height=2, command=lambda: sch_show("csh"))
+    ch_sh.place(x=110, y=305)
+    add_sh = Button(sch, text="Add to Schedule", width=20, height=2, command=lambda: sch_show("addsh"))
+    add_sh.place(x=110, y=355)
+    rem_sh = Button(sch, text="Remove from Schedule", width=20, height=2, command=lambda: sch_show("remsh"))
+    rem_sh.place(x=270, y=305)
+    ex = Button(sch, text="Exit", width=15, height=2, command=lambda: sch_show("exit"))
+    ex.place(x=270, y=355)
+
+#INVOICES WINDOW--------------------------------------------------------------------------------------------------------
+inv_wind = tk.Toplevel(top)
+inv_wind.geometry("700x500")
+inv_wind.title("Invoices")
+
+inv_dis = Text(inv_wind, width=60, height=15)
+inv_dis.place(x=100, y=50)
+
+inv_wind.withdraw()
+
+def invoices_window():
+
+    inv_wind.deiconify()
+
+    inv_ent = Entry(inv_wind, width=60)
+    inv_ent.place(x=100, y=300)
+
+    def inv_show(x):
+        if x == "crin":
+            inv_create_win()
+            inv_wind.iconify()
+        elif x == "show":
+            for e in invoices:
+                e.display_invoices()
+        elif x == "del":
+            inv_dis.insert(tk.INSERT, "Enter the name on the invoice in the entry box below then \nclick submit...")
+        elif x == "submit":
+            nm = inv_ent.get()
+            if len(invoices) > 0:
+                for e in invoices:
+                    if e.name.lower() == nm.lower():
+                        invoices.pop(e)
+                        inv_dis.insert(tk.INSERT, f"""\nInvoice matching name "{nm}" deleted...""")
+                    else:
+                        inv_dis.insert(tk.INSERT, f"""\nNo invoice found matching name "{nm}"... """)
+            elif len(invoices) == 0:
+                inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
+
+        elif x == "exit":
+            top.deiconify()
+            inv_wind.iconify()
+
+    cr_in = Button(inv_wind, text="Create Invoice", width=20, height=2, command=lambda: inv_show("crin"))
+    cr_in.place(x=100, y=325)
+
+    sh_in = Button(inv_wind, text="Show Invoices", width=20, height=2, command=lambda: inv_show("show"))
+    sh_in.place(x=100, y=375)
+
+    del_in = Button(inv_wind, text="Delete Invoice", width=20, height=2, command=lambda: inv_show("del"))
+    del_in.place(x=260, y=325)
+
+    exit_in = Button(inv_wind, text="Exit", width=15, height=2, command=lambda: inv_show("exit"))
+    exit_in.place(x=260, y=375)
+
+    submit = Button(inv_wind, text="Submit", width=12, height=1, command=lambda: inv_show("submit"))
+    submit.place(x=478, y=298)
+
+#INVENTORY WINDOW-------------------------------------------------------------------------------------------------------
+int_men = tk.Toplevel(top)
+int_men.geometry("700x500")
+int_men.title("Inventory")
+
+int_dis = Text(int_men, width=60, height=15)
+int_dis.place(x=100, y=50)
+
+int_men.withdraw()
+
+def inventory_menu():
+
+    int_men.deiconify()
+
+    def int_show(x):
+        if x == "intcheck":
+            inventory.check_inv()
+
+        elif x == "upint":
+            inventory.update_inv()
+
+        elif x == "exit":
+            int_men.iconify()
+            top.deiconify()
+
+    int_check = Button(int_men, text="Check Inventory", width=20, height=2, command=lambda: int_show("intcheck"))
+    int_check.place(x=100, y=305)
+
+    int_exit = Button(int_men, text="Exit", width=15, height=2, command=lambda: int_show("exit"))
+    int_exit.place(x=100, y=355)
+
+    int_update = Button(int_men, text="Update Inventory", width=20, height=2, command=lambda: int_show("upint"))
+    int_update.place(x=260, y=305)
+
+#INVOICE CREATOR WINDOW-------------------------------------------------------------------------------------------------
+top1 = tk.Toplevel(top)
+top1.title("Invoice Creation")
+top1.geometry("500x575")
+
+top1.withdraw()
+
 def inv_create_win():
-    top1 = tk.Toplevel(top)
-    top1.title("Invoice Creation")
-    top1.geometry("500x575")
+
+    top1.deiconify()
 
     def cr_i():
         invoice.create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
@@ -240,7 +372,7 @@ def inv_create_win():
                                car_year_entry.get(), car_color_entry.get(), issue_entry.get(), diag_repair_entry.get(), labor_hours_entry.get())
         top1.iconify()
         inv_wind.deiconify()
-        inv_wind.insert(tk.INSERT, "Invoice Created Successfully")
+        inv_dis.insert(tk.INSERT, "Invoice Created Successfully")
 
 
     tk.Label(top1, text="Invoice ID:").place(x=10, y=10)
@@ -310,95 +442,7 @@ def inv_create_win():
     submit = Button(top1, text="Submit", width=20, height=2, command=cr_i)
     submit.place(x=175, y=500)
 
-def schedule_window():
-    sch = tk.Toplevel(top)
-    sch.geometry("700x500")
-    sch.title("Scheduling")
-
-    sch_dis = Text(sch, width=60, height=15)
-    sch_dis.place(x=100, y=50)
-
-    def sch_show(x):
-        if x == "csh":
-            schedule.check_schedule()
-
-        elif x == "addsh":
-            schedule.add_schedule()
-
-        elif x == "remsh":
-            schedule.remove_schedule()
-
-        elif x == "exit":
-            top.deiconify()
-            sch.iconify()
-
-    ch_sh = Button(sch, text="Check Schedule", width=20, height=2, command=lambda: sch_show("csh"))
-    ch_sh.place(x=110, y=305)
-    add_sh = Button(sch, text="Add to Schedule", width=20, height=2, command=lambda: sch_show("addsh"))
-    add_sh.place(x=110, y=355)
-    rem_sh = Button(sch, text="Remove from Schedule", width=20, height=2, command=lambda: sch_show("remsh"))
-    rem_sh.place(x=270, y=305)
-    ex = Button(sch, text="Exit", width=15, height=2, command=lambda: sch_show("exit"))
-    ex.place(x=270, y=355)
-
-def invoices_window():
-    inv_wind = tk.Toplevel(top)
-    inv_wind.geometry("700x500")
-    inv_wind.title("Inventory")
-
-    inv_dis = Text(inv_wind, width=60, height=15)
-    inv_dis.place(x=100, y=50)
-
-    inv_ent = Entry(inv_wind, width=60)
-    inv_ent.place(x=100, y=300)
-
-    def inv_show(x):
-        if x == "crin":
-            inv_create_win()
-            inv_wind.iconify()
-        elif x == "show":
-            for e in invoices:
-                e.display_invoices()
-        elif x == "del":
-            inv_dis.insert(tk.INSERT, "Enter the name on the invoice in the entry box below then \nclick submit...")
-        elif x == "submit":
-            nm = inv_ent.get()
-            if len(invoices) > 0:
-                for e in invoices:
-                    if e.name.lower() == nm.lower():
-                        invoices.pop(e)
-                        inv_dis.insert(tk.INSERT, f"""\nInvoice matching name "{nm}" deleted...""")
-                    else:
-                        inv_dis.insert(tk.INSERT, f"""\nNo invoice found matching name "{nm}"... """)
-            elif len(invoices) == 0:
-                inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
-
-
-
-        elif x == "exit":
-            top.deiconify()
-            inv_wind.iconify()
-
-    cr_in = Button(inv_wind, text="Create Invoice", width=20, height=2, command=lambda: inv_show("crin"))
-    cr_in.place(x=100, y=325)
-
-    sh_in = Button(inv_wind, text="Show Invoices", width=20, height=2, command=lambda: inv_show("show"))
-    sh_in.place(x=100, y=375)
-
-    del_in = Button(inv_wind, text="Delete Invoice", width=20, height=2, command=lambda: inv_show("del"))
-    del_in.place(x=260, y=325)
-
-    exit_in = Button(inv_wind, text="Exit", width=15, height=2, command=lambda: inv_show("exit"))
-    exit_in.place(x=260, y=375)
-
-    yes = Button(inv_wind, text="Yes", width=8, height=3, command=lambda: inv_show("yes"))
-    yes.place(x=438, y=340)
-
-    no = Button(inv_wind, text="No", width=8, height=3, command=lambda: inv_show("no"))
-    no.place(x=518, y=340)
-
-    submit = Button(inv_wind, text="Submit", width=12, height=1, command=lambda: inv_show("submit"))
-    submit.place(x=478, y=298)
+#MAIN WINDOW BUTTONS----------------------------------------------------------------------------------------------------
 
 def show(x):
     try:
@@ -407,7 +451,8 @@ def show(x):
             top.iconify()
 
         elif x == "cin":
-            inventory.check_inv()
+            inventory_menu()
+            top.iconify()
 
         elif x == "sch":
             schedule_window()
@@ -488,7 +533,7 @@ def show(x):
 
 inv_men = Button(top, text="Invoice Menu", width=20, height=2, command=lambda: show("ci"))
 inv_men.place(x=110, y=305)
-ch_in = Button(top, text="Check Inventory", width=20, height=2, command=lambda: show("cin"))
+ch_in = Button(top, text="Inventory Menu", width=20, height=2, command=lambda: show("cin"))
 ch_in.place(x=110, y=355)
 sh = Button(top, text="Scheduling Menu", width=20, height=2, command=lambda: show("sch"))
 sh.place(x=110, y=405)
