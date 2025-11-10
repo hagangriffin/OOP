@@ -191,15 +191,13 @@ class Scheduling:
         self.phone = ""
         self.email = ""
         self.wait_list = {}
-        self.total_scheduled = len(self.wait_list)
-
-        if len(self.wait_list) > 0:
-            self.next_job = next(iter(self.wait_list.items()))
+        self.total_scheduled = 0
+        self.next_job = ""
 
 #Add to Schedule
-    def add_schedule(self, name = "", phone = "", email = ""):
-        self.wait_list.update({self.name: {"Phone: ": self.phone, "Email: ": self.email}})
-        sch_dis.insert(tk.INSERT,"Schedule Updated")
+    def add_schedule(self, name, phone, email):
+        self.wait_list.update({name: {"Phone: ": phone, "Email: ": email}})
+        dis.insert(tk.INSERT,"Schedule Updated...")
 
 #Remove Cancelled Job From Schedule
     def remove_schedule(self):
@@ -210,6 +208,9 @@ class Scheduling:
         sch_dis.insert(tk.INSERT,"Job Removed")
 #Check Schedule
     def check_schedule(self):
+        self.total_scheduled = len(self.wait_list)
+        if len(self.wait_list) > 0:
+            self.next_job = next(iter(self.wait_list.items()))
         sch_dis.insert(tk.INSERT,f"Next job: {self.next_job} \nTotal jobs scheduled: {self.total_scheduled}")
 
 inventory = Inventory()
@@ -246,14 +247,14 @@ def schedule_window():
             schedule.check_schedule()
 
         elif x == "addsh":
-            schedule.add_schedule()
+            sch_creator()
 
         elif x == "remsh":
             schedule.remove_schedule()
 
         elif x == "exit":
             top.deiconify()
-            sch.iconify()
+            sch.withdraw()
 
     ch_sh = Button(sch, text="Check Schedule", width=20, height=2, command=lambda: sch_show("csh"))
     ch_sh.place(x=110, y=305)
@@ -284,7 +285,7 @@ def invoices_window():
     def inv_show(x):
         if x == "crin":
             inv_create_win()
-            inv_wind.iconify()
+            inv_wind.withdraw()
         elif x == "show":
             for e in invoices:
                 e.display_invoices()
@@ -304,7 +305,7 @@ def invoices_window():
 
         elif x == "exit":
             top.deiconify()
-            inv_wind.iconify()
+            inv_wind.withdraw()
 
     cr_in = Button(inv_wind, text="Create Invoice", width=20, height=2, command=lambda: inv_show("crin"))
     cr_in.place(x=100, y=325)
@@ -343,7 +344,7 @@ def inventory_menu():
             inventory.update_inv()
 
         elif x == "exit":
-            int_men.iconify()
+            int_men.withdraw()
             top.deiconify()
 
     int_check = Button(int_men, text="Check Inventory", width=20, height=2, command=lambda: int_show("intcheck"))
@@ -370,7 +371,7 @@ def inv_create_win():
         invoice.create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
                                card_name_entry.get(), card_exp_entry.get(), card_cvv_entry.get(), car_make_entry.get(), car_model_entry.get(),
                                car_year_entry.get(), car_color_entry.get(), issue_entry.get(), diag_repair_entry.get(), labor_hours_entry.get())
-        top1.iconify()
+        top1.withdraw()
         inv_wind.deiconify()
         inv_dis.insert(tk.INSERT, "Invoice Created Successfully")
 
@@ -442,21 +443,59 @@ def inv_create_win():
     submit = Button(top1, text="Submit", width=20, height=2, command=cr_i)
     submit.place(x=175, y=500)
 
+#SCHEDULE CREATOR-------------------------------------------------------------------------------------------------------
+
+sh_cr = tk.Toplevel(top)
+sh_cr.geometry("500x150")
+sh_cr.title("Schedule Creation")
+
+sh_cr.withdraw()
+
+def sch_creator():
+
+    sh_cr.deiconify()
+
+    def sh_show(x):
+        if x == "sub":
+            cr_s()
+
+    def cr_s():
+        schedule.add_schedule(name_entry.get(), phone_entry.get(), email_entry.get())
+
+        sh_cr.withdraw()
+        sch.withdraw()
+        top.deiconify()
+
+    tk.Label(sh_cr, text="Name").place(x=10, y=10)
+    name_entry = Entry(sh_cr, width=60)
+    name_entry.place(x=125, y=12)
+
+    tk.Label(sh_cr, text="Phone").place(x=10, y=40)
+    phone_entry = Entry(sh_cr, width=60)
+    phone_entry.place(x=125, y=42)
+
+    tk.Label(sh_cr, text="Email").place(x=10, y=70)
+    email_entry = Entry(sh_cr, width=60)
+    email_entry.place(x=125, y=72)
+
+    submit = Button(sh_cr, text="Submit", width=20, height=1, command=lambda: sh_show("sub"))
+    submit.place(x=175, y=102)
+
 #MAIN WINDOW BUTTONS----------------------------------------------------------------------------------------------------
 
 def show(x):
     try:
         if x == "ci":
             invoices_window()
-            top.iconify()
+            top.withdraw()
 
         elif x == "cin":
             inventory_menu()
-            top.iconify()
+            top.withdraw()
 
         elif x == "sch":
             schedule_window()
-            top.iconify()
+            top.withdraw()
 
         elif x == "yes":
             inventory.update_inv()
