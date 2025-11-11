@@ -29,34 +29,12 @@ class Invoice:
         self.parts_cost = 0.0
         self.total_cost = 0.0
         self.eta_days = 0
-#Create Invoice
-    def create_invoice(self, entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9, entry10, entry11, entry12, entry13, entry14, entry15, entry16):
-        self.inv_id = entry1
-        self.name = entry2
-        self.dob = entry3
-        self.phone = entry4
-        self.email = entry5
-        self.card_number = entry6
-        self.card_name = entry7
-        self.card_expiration = entry8
-        self.card_ccv = entry9
-        self.car_make = entry10
-        self.car_model = entry11
-        self.car_year = entry12
-        self.car_color = entry13
-        self.issue = entry14
-        self.diag_or_repair = entry15
-        self.est_labor_hrs = entry16
+#Create Invoice Calcs
+    def invoice_calc(self):
         self.total_cost = self.labor_calc()
         self.parts_cost = self.parts_calc()
         self.total_cost = self.total_cost_calc()
         self.eta_days = self.eta_calc()
-
-        new_inv = Invoice(self.inv_id, self.name, self.dob, self.phone, self.email, self.card_name, self.card_number, self.card_expiration, self.card_ccv, self.car_make, self.car_model, self.car_year, self.car_color, self.issue, self.diag_or_repair, self.est_labor_hrs)
-        invoices.append(new_inv)
-
-        dis.insert(tk.INSERT, "Invoice Created")
-
 #Calculate Labor Cost
     def labor_calc(self):
         total_labor_cost = self.per_hour_pay * self.est_labor_hrs
@@ -87,9 +65,10 @@ class Invoice:
         schedule.add_schedule(self.name, self.phone, self.email)
 
     def display_invoices(self):
-        dis.insert(tk.INSERT,"--------------------------------------------")
-        dis.insert(tk.INSERT, f"Name: {self.name} \nDOB: {self.dob} \nPhone: {self.phone} \nEmail: {self.email} \nCard Name: {self.card_name} \nCard Number: {self.card_number} \nCard Expiry: {self.card_expiration} \nCard CVV: {self.card_ccv} \nCar Make: {self.car_make} \nCar Model: {self.car_model} \nCar Color: {self.car_color} \nCar Year: {self.car_year} \nIssue: {self.issue} \nDiag or Repair: {self.diag_or_repair} \nEstimated Labor Hours: {self.est_labor_hrs}")
-        dis.insert(tk.INSERT,"--------------------------------------------")
+        inv_dis.delete("1.0", tk.END)
+        inv_dis.insert(tk.INSERT,"--------------------------------------------")
+        inv_dis.insert(tk.INSERT, f"\nName: {self.name} \nDOB: {self.dob} \nPhone: {self.phone} \nEmail: {self.email} \nCard Name: {self.card_name} \nCard Number: {self.card_number} \nCard Expiry: {self.card_expiration} \nCard CVV: {self.card_ccv} \nCar Make: {self.car_make} \nCar Model: {self.car_model} \nCar Color: {self.car_color} \nCar Year: {self.car_year} \nIssue: {self.issue} \nDiag or Repair: {self.diag_or_repair} \nEstimated Labor Hours: {self.est_labor_hrs}")
+        inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
 
 #Inventory Class
 
@@ -212,10 +191,40 @@ class Scheduling:
             self.next_job = next(iter(self.wait_list.items()))
         sch_dis.insert(tk.INSERT,f"Next job: {self.next_job} \nTotal jobs scheduled: {self.total_scheduled}")
 
+def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9, entry10,
+                           entry11, entry12, entry13, entry14, entry15, entry16):
+    inv_id = entry1
+    name = entry2
+    dob = entry3
+    phone = entry4
+    email = entry5
+    card_number = entry6
+    card_name = entry7
+    card_expiration = entry8
+    card_ccv = entry9
+    car_make = entry10
+    car_model = entry11
+    car_year = entry12
+    car_color = entry13
+    issue = entry14
+    diag_or_repair = entry15
+    est_labor_hrs = int(entry16)
+
+    new_inv = Invoice(inv_id, name, dob, phone, email, card_name,
+                              card_number, card_expiration, card_ccv, car_make, car_model,
+                              car_year, car_color, issue, diag_or_repair, est_labor_hrs)
+    new_inv.invoice_calc()
+    invoices.append(new_inv)
+
+    inv_dis.delete("1.0", tk.END)
+    inv_dis.insert(tk.INSERT, "Invoice Created")
+
+invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
+
 inventory = Inventory()
 schedule = Scheduling()
 invoice = Invoice()
-invoices = []
+invoices = [invent]
 inventories = [inventory]
 schedules = [schedule]
 
@@ -297,16 +306,21 @@ def invoices_window():
             inv_create_win()
             inv_wind.withdraw()
         elif x == "show":
-            for e in invoices:
-                e.display_invoices()
+            if len(invoices) > 0:
+                for e in invoices:
+                    e.display_invoices()
+            else:
+                inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
         elif x == "del":
+            inv_dis.delete("1.0", tk.END)
             inv_dis.insert(tk.INSERT, "Enter the name on the invoice in the entry box below then \nclick submit...")
         elif x == "submit":
             nm = inv_ent.get()
+            inv_ent.delete(0, tk.END)
             if len(invoices) > 0:
                 for e in invoices:
                     if e.name.lower() == nm.lower():
-                        invoices.pop(e)
+                        invoices.remove(e)
                         inv_dis.insert(tk.INSERT, f"""\nInvoice matching name "{nm}" deleted...""")
                     else:
                         inv_dis.insert(tk.INSERT, f"""\nNo invoice found matching name "{nm}"... """)
@@ -378,13 +392,11 @@ def inv_create_win():
     top1.deiconify()
 
     def cr_i():
-        invoice.create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
+        create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
                                card_name_entry.get(), card_exp_entry.get(), card_cvv_entry.get(), car_make_entry.get(), car_model_entry.get(),
                                car_year_entry.get(), car_color_entry.get(), issue_entry.get(), diag_repair_entry.get(), labor_hours_entry.get())
         top1.withdraw()
         inv_wind.deiconify()
-        inv_dis.insert(tk.INSERT, "Invoice Created Successfully")
-
 
     tk.Label(top1, text="Invoice ID:").place(x=10, y=10)
     inv_id_entry = Entry(top1, width=60)
@@ -473,7 +485,6 @@ def sch_creator():
         schedule.add_schedule(name_entry.get(), phone_entry.get(), email_entry.get())
 
         sh_cr.withdraw()
-        sch.withdraw()
         top.deiconify()
 
     tk.Label(sh_cr, text="Name").place(x=10, y=10)
