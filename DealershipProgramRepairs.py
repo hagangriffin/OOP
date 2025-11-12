@@ -29,15 +29,18 @@ class Invoice:
         self.parts_cost = 0.0
         self.total_cost = 0.0
         self.eta_days = 0
+
 #Create Invoice Calcs
     def invoice_calc(self):
         self.total_cost = self.labor_calc()
         self.parts_cost = self.parts_calc()
         self.total_cost = self.total_cost_calc()
         self.eta_days = self.eta_calc()
+
 #Calculate Labor Cost
     def labor_calc(self):
         total_labor_cost = self.per_hour_pay * self.est_labor_hrs
+        dis.delete("1.0", tk.END)
         dis.insert(tk.INSERT, "Calculating Labor Cost...")
         return total_labor_cost
 
@@ -84,6 +87,7 @@ class Inventory:
 
 #Check Inventory Stock
     def check_inv(self):
+        int_dis.delete("1.0", tk.END)
         int_dis.insert(tk.INSERT,f"Total Engine Parts: {self.parts['Engine Parts']}")
         int_dis.insert(tk.INSERT,f"\nTotal Drivetrain Parts: {self.parts['Drivetrain Parts']}")
         int_dis.insert(tk.INSERT,f"\nTotal Electronic Parts: {self.parts['Electronic Parts']}")
@@ -93,7 +97,7 @@ class Inventory:
         if self.parts["Engine Parts"] < 10 or self.parts["Drivetrain Parts"] < 10 or self.parts["Electronic Parts"] < 10 or self.parts["Interior Parts"] < 10 or self.parts["Exterior Parts"] < 10 or self.parts["Main Frame Parts"] < 10:
             int_dis.insert(tk.INSERT, """\n\nStock is low... To order more click "Update Inventory" """)
         else:
-            int_dis.insert(tk.INSERT, "Stock is up to date...")
+            int_dis.insert(tk.INSERT, "\n\nStock is up to date...")
 
 #Update Inventory Stock
     def update_inv(self):
@@ -101,6 +105,7 @@ class Inventory:
         stock_ordered = False
         type_ordered = []
         total_cost = 0
+        int_dis.delete("1.0", tk.END)
 
         if self.parts["Engine Parts"] < 10:
             eng_parts_ordered = order_goal - self.parts["Engine Parts"]
@@ -158,7 +163,7 @@ class Inventory:
                 int_dis.insert(tk.INSERT, f"\n{t}")
 
         elif not stock_ordered:
-            int_dis.insert(tk.INSERT,"\nNo parts were needed")
+            int_dis.insert(tk.INSERT,"\n\nNo parts were needed")
 
         return self.parts["Engine Parts"], self.parts["Drivetrain Parts"], self.parts["Electronic Parts"], self.parts["Interior Parts"], self.parts["Exterior Parts"], self.parts["Main Frame Parts"]
 
@@ -166,30 +171,33 @@ class Inventory:
 
 class Scheduling:
     def __init__(self):
+        self.sch_id = 0
         self.name = ""
         self.phone = ""
         self.email = ""
-        self.wait_list = {}
+        self.wait_list = []
         self.total_scheduled = 0
-        self.next_job = ""
 
 #Add to Schedule
     def add_schedule(self, name, phone, email):
-        self.wait_list.update({name: {"Phone: ": phone, "Email: ": email}})
-        dis.insert(tk.INSERT,"Schedule Updated...")
+        self.wait_list.append({"Name": name, "Phone": phone, "Email": email})
+        sch_dis.delete("1.0", tk.END)
+        sch_dis.insert(tk.INSERT,"Schedule Updated...")
 
 #Remove Cancelled Job From Schedule
     def remove_schedule(self, x):
         for n in self.wait_list:
             if n.name == x:
                 self.wait_list.pop(n)
+        dis.delete("1.0", tk.END)
         dis.insert(tk.INSERT,"Job Removed")
 #Check Schedule
     def check_schedule(self):
         self.total_scheduled = len(self.wait_list)
         if len(self.wait_list) > 0:
-            self.next_job = next(iter(self.wait_list.items()))
-        sch_dis.insert(tk.INSERT,f"Next job: {self.next_job} \nTotal jobs scheduled: {self.total_scheduled}")
+            next_job = self.wait_list[0]
+            sch_dis.delete("1.0", tk.END)
+            sch_dis.insert(tk.INSERT, "Next Job:\nName: " + next_job["Name"] + "\nPhone: " + next_job["Phone"] + "\nEmail: " + next_job["Email"] + "\n\nTotal Scheduled: " + str(self.total_scheduled))
 
 def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9, entry10,
                            entry11, entry12, entry13, entry14, entry15, entry16):
@@ -261,6 +269,7 @@ def schedule_window():
             sch_creator()
 
         elif x == "remsh":
+            sch_dis.delete("1.0", tk.END)
             sch_dis.insert(tk.INSERT, """Enter the name to be removed from schedule\nthen click "Submit" """)
 
         elif x == "exit":
@@ -310,6 +319,7 @@ def invoices_window():
                 for e in invoices:
                     e.display_invoices()
             else:
+                inv_dis.delete("1.0", tk.END)
                 inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
         elif x == "del":
             inv_dis.delete("1.0", tk.END)
@@ -321,11 +331,11 @@ def invoices_window():
                 for e in invoices:
                     if e.name.lower() == nm.lower():
                         invoices.remove(e)
-                        inv_dis.insert(tk.INSERT, f"""\nInvoice matching name "{nm}" deleted...""")
+                        inv_dis.insert(tk.INSERT, f"""\n\nInvoice matching name "{nm}" deleted...""")
                     else:
-                        inv_dis.insert(tk.INSERT, f"""\nNo invoice found matching name "{nm}"... """)
+                        inv_dis.insert(tk.INSERT, f"""\n\nNo invoice found matching name "{nm}"... """)
             elif len(invoices) == 0:
-                inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
+                inv_dis.insert(tk.INSERT, "\n\nNo invoices currently saved...")
 
         elif x == "exit":
             top.deiconify()
@@ -485,7 +495,6 @@ def sch_creator():
         schedule.add_schedule(name_entry.get(), phone_entry.get(), email_entry.get())
 
         sh_cr.withdraw()
-        top.deiconify()
 
     tk.Label(sh_cr, text="Name").place(x=10, y=10)
     name_entry = Entry(sh_cr, width=60)
@@ -519,6 +528,7 @@ def show(x):
             top.withdraw()
 
         elif x == "save":
+            dis.delete("1.0", tk.END)
             dis.insert(tk.INSERT, "Saving...\nSaved...")
             stored_invoices = open("invoices.dat", "ab")
             stored_schedule = open("schedule.dat", "ab")
@@ -543,8 +553,8 @@ def show(x):
             stored_inventory.close()
 
         elif x == "load":
-
-            dis.insert(tk.INSERT, "Loading...\nLoaded...")
+            dis.delete("1.0", tk.END)
+            dis.insert(tk.INSERT, "Loading...")
             stored_invoices = open("invoices.dat", "ab")
             stored_schedule = open("schedule.dat", "ab")
             stored_inventory = open("inventory.dat", "ab")
