@@ -77,7 +77,7 @@ class Invoice:
 
 class Inventory:
     def __init__(self):
-        self.parts = {"Engine Parts": 0, "Drivetrain Parts": 0, "Electronic Parts": 0, "Interior Parts": 0, "Exterior Parts": 0, "Main Frame Parts": 0}
+        self.parts = {"Engine Parts": 15, "Drivetrain Parts": 15, "Electronic Parts": 15, "Interior Parts": 15, "Exterior Parts": 15, "Main Frame Parts": 15}
         self.eng_parts_price = 200
         self.drive_parts_price = 125
         self.electro_parts_price = 75
@@ -175,8 +175,8 @@ class Scheduling:
         self.name = ""
         self.phone = ""
         self.email = ""
-        self.wait_list = []
-        self.total_scheduled = 0
+        self.wait_list = [{"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"}]
+        self.total_scheduled = 1
 
 #Add to Schedule
     def add_schedule(self, name, phone, email):
@@ -187,8 +187,8 @@ class Scheduling:
 #Remove Cancelled Job From Schedule
     def remove_schedule(self, x):
         for n in self.wait_list:
-            if n.name == x:
-                self.wait_list.pop(n)
+            if n["Name"] == x:
+                self.wait_list.pop(0)
         dis.delete("1.0", tk.END)
         dis.insert(tk.INSERT,"Job Removed")
 #Check Schedule
@@ -514,7 +514,6 @@ def sch_creator():
 #MAIN WINDOW BUTTONS----------------------------------------------------------------------------------------------------
 
 def show(x):
-    try:
         if x == "ci":
             invoices_window()
             top.withdraw()
@@ -530,9 +529,9 @@ def show(x):
         elif x == "save":
             dis.delete("1.0", tk.END)
             dis.insert(tk.INSERT, "Saving...\nSaved...")
-            stored_invoices = open("invoices.dat", "ab")
-            stored_schedule = open("schedule.dat", "ab")
-            stored_inventory = open("inventory.dat", "ab")
+            stored_invoices = open("invoices.dat", "wb")
+            stored_schedule = open("schedule.dat", "wb")
+            stored_inventory = open("inventory.dat", "wb")
 
             stored_invoices.seek(0)
             stored_invoices.truncate()
@@ -543,10 +542,8 @@ def show(x):
 
             for inv in invoices:
                 pickle.dump(inv, stored_invoices)
-            for sch in schedules:
-                pickle.dump(sch, stored_schedule)
-            for invent in inventories:
-                pickle.dump(invent, stored_inventory)
+            pickle.dump(schedules[0], stored_schedule)
+            pickle.dump(inventories[0], stored_inventory)
 
             stored_invoices.close()
             stored_schedule.close()
@@ -555,18 +552,19 @@ def show(x):
         elif x == "load":
             dis.delete("1.0", tk.END)
             dis.insert(tk.INSERT, "Loading...")
-            stored_invoices = open("invoices.dat", "ab")
-            stored_schedule = open("schedule.dat", "ab")
-            stored_inventory = open("inventory.dat", "ab")
+            stored_invoices = open("invoices.dat", "rb")
+            stored_schedule = open("schedule.dat", "rb")
+            stored_inventory = open("inventory.dat", "rb")
 
             while True:
 
                 try:
-                    loaded_invoices = pickle.load(stored_invoices)
-                    count = len(invoices)
-                    while count != 0:
-                        invoices.pop()
-                        count -= 1
+                    loaded_invoices = []
+                    for _ in pickle.load(stored_invoices):
+                        loaded_invoices.append(_)
+
+                    for e in loaded_invoices:
+                        invoices.pop(e)
 
                     for e in loaded_invoices:
                         invoices.append(e)
@@ -597,9 +595,8 @@ def show(x):
                     continue
         elif x == "exit":
             top.quit()
-
-    except:
-        dis.insert(tk.INSERT, "\n\nInvalid Input")
+        else:
+            dis.insert(tk.INSERT, "\n\nInvalid Input")
 
 inv_men = Button(top, text="Invoice Menu", width=20, height=2, command=lambda: show("ci"))
 inv_men.place(x=110, y=305)
