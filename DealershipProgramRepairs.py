@@ -68,8 +68,7 @@ class Invoice:
         schedule.add_schedule(self.name, self.phone, self.email)
 
     def display_invoices(self):
-        inv_dis.delete("1.0", tk.END)
-        inv_dis.insert(tk.INSERT,"--------------------------------------------")
+        inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
         inv_dis.insert(tk.INSERT, f"\nName: {self.name} \nDOB: {self.dob} \nPhone: {self.phone} \nEmail: {self.email} \nCard Name: {self.card_name} \nCard Number: {self.card_number} \nCard Expiry: {self.card_expiration} \nCard CVV: {self.card_ccv} \nCar Make: {self.car_make} \nCar Model: {self.car_model} \nCar Color: {self.car_color} \nCar Year: {self.car_year} \nIssue: {self.issue} \nDiag or Repair: {self.diag_or_repair} \nEstimated Labor Hours: {self.est_labor_hrs}")
         inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
 
@@ -233,8 +232,7 @@ invent2 = Invoice(2, "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 
 inventory = Inventory()
 schedule = Scheduling()
-invoice = Invoice()
-invoices = [invent, invent2]
+invoices = []
 inventories = [inventory]
 schedules = [schedule]
 
@@ -318,6 +316,7 @@ def invoices_window():
             inv_wind.withdraw()
         elif x == "show":
             if len(invoices) > 0:
+                inv_dis.delete("1.0", tk.END)
                 for e in invoices:
                     e.display_invoices()
             else:
@@ -542,9 +541,13 @@ def show(x):
             with open("saved_inventory.pk1", "wb") as inv:
                 pickle.dump(inventories[0], inv, pickle.HIGHEST_PROTOCOL)
 
+            with open("invoice_num.dat", "wb") as num:
+                pickle.dump(len(invoices), num)
+
             i.close()
             inv.close()
             s.close()
+            num.close()
 
         elif x == "load":
             dis.delete("1.0", tk.END)
@@ -553,18 +556,19 @@ def show(x):
             invoices.clear()
             schedules.clear()
             inventories.clear()
+            with open("invoice_num.dat", "rb") as num:
+                inv_num = pickle.load(num)
 
             with open("saved_invoices.pk1", "rb") as i:
-                loaded_invoices = pickle.load(i)
-                invoices.append(loaded_invoices)
+                while inv_num > 0:
+                    invoices.append(pickle.load(i))
+                    inv_num -= 1
 
             with open("saved_schedule.pk1", "rb") as s:
                  schedules.append(pickle.load(s))
 
             with open("saved_inventory.pk1", "rb") as inv:
                 inventories.append(pickle.load(inv))
-
-
 
         elif x == "exit":
             top.quit()
