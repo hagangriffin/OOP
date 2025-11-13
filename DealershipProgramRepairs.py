@@ -321,7 +321,7 @@ def invoices_window():
                     e.display_invoices()
             else:
                 inv_dis.delete("1.0", tk.END)
-                inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
+                inv_dis.insert(tk.INSERT, "No invoices currently saved...")
         elif x == "del":
             inv_dis.delete("1.0", tk.END)
             inv_dis.insert(tk.INSERT, "Enter the name on the invoice in the entry box below then \nclick submit...")
@@ -336,7 +336,8 @@ def invoices_window():
                     else:
                         inv_dis.insert(tk.INSERT, f"""\n\nNo invoice found matching name "{nm}"... """)
             elif len(invoices) == 0:
-                inv_dis.insert(tk.INSERT, "\n\nNo invoices currently saved...")
+                inv_dis.delete("1.0", tk.END)
+                inv_dis.insert(tk.INSERT, "No invoices currently saved...")
 
         elif x == "exit":
             top.deiconify()
