@@ -228,11 +228,13 @@ def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry
     inv_dis.insert(tk.INSERT, "Invoice Created")
 
 invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
+invent2 = Invoice(2, "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", 24)
+
 
 inventory = Inventory()
 schedule = Scheduling()
 invoice = Invoice()
-invoices = [invent]
+invoices = [invent, invent2]
 inventories = [inventory]
 schedules = [schedule]
 
@@ -529,70 +531,41 @@ def show(x):
         elif x == "save":
             dis.delete("1.0", tk.END)
             dis.insert(tk.INSERT, "Saving...\nSaved...")
-            stored_invoices = open("invoices.dat", "wb")
-            stored_schedule = open("schedule.dat", "wb")
-            stored_inventory = open("inventory.dat", "wb")
 
-            stored_invoices.seek(0)
-            stored_invoices.truncate()
-            stored_schedule.seek(0)
-            stored_schedule.truncate()
-            stored_inventory.seek(0)
-            stored_inventory.truncate()
+            with open("saved_invoices.pk1", "wb") as i:
+                for e in invoices:
+                    pickle.dump(e, i, pickle.HIGHEST_PROTOCOL)
 
-            for inv in invoices:
-                pickle.dump(inv, stored_invoices)
-            pickle.dump(schedules[0], stored_schedule)
-            pickle.dump(inventories[0], stored_inventory)
+            with open("saved_schedule.pk1", "wb") as s:
+                pickle.dump(schedules[0], s, pickle.HIGHEST_PROTOCOL)
 
-            stored_invoices.close()
-            stored_schedule.close()
-            stored_inventory.close()
+            with open("saved_inventory.pk1", "wb") as inv:
+                pickle.dump(inventories[0], inv, pickle.HIGHEST_PROTOCOL)
+
+            i.close()
+            inv.close()
+            s.close()
 
         elif x == "load":
             dis.delete("1.0", tk.END)
-            dis.insert(tk.INSERT, "Loading...")
-            stored_invoices = open("invoices.dat", "rb")
-            stored_schedule = open("schedule.dat", "rb")
-            stored_inventory = open("inventory.dat", "rb")
+            dis.insert(tk.INSERT, "Loading...\nLoaded...")
 
-            while True:
+            invoices.clear()
+            schedules.clear()
+            inventories.clear()
 
-                try:
-                    loaded_invoices = []
-                    for _ in pickle.load(stored_invoices):
-                        loaded_invoices.append(_)
+            with open("saved_invoices.pk1", "rb") as i:
+                loaded_invoices = pickle.load(i)
+                invoices.append(loaded_invoices)
 
-                    for e in loaded_invoices:
-                        invoices.pop(e)
+            with open("saved_schedule.pk1", "rb") as s:
+                 schedules.append(pickle.load(s))
 
-                    for e in loaded_invoices:
-                        invoices.append(e)
+            with open("saved_inventory.pk1", "rb") as inv:
+                inventories.append(pickle.load(inv))
 
-                    dis.insert(tk.INSERT, "Invoices Loaded...")
 
-                except EOFError:
-                    continue
 
-                try:
-                    loaded_schedule = pickle.load(stored_schedule)
-                    schedules.pop()
-                    schedules.append(loaded_schedule)
-
-                    dis.insert(tk.INSERT, "Schedule Loaded...")
-
-                except EOFError:
-                    continue
-
-                try:
-                    loaded_inventory = pickle.load(stored_inventory)
-                    inventories.pop()
-                    inventories.append(loaded_inventory)
-
-                    dis.insert(tk.INSERT, "Inventory Loaded...")
-
-                except EOFError:
-                    continue
         elif x == "exit":
             top.quit()
         else:
