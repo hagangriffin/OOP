@@ -108,5 +108,3 @@ add_s1 = Button(top, text="Add Queue to Stack", width=20, height=2, command=lamb
 add_s1.place(x=100, y=480)
 
 top.mainloop()
-
-top.mainloop()
