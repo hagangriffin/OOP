@@ -41,8 +41,7 @@ class Invoice:
 #Calculate Labor Cost
     def labor_calc(self):
         total_labor_cost = self.per_hour_pay * self.est_labor_hrs
-        dis.delete("1.0", tk.END)
-        dis.insert(tk.INSERT, "Calculating Labor Cost...")
+        inv_dis.delete("1.0", tk.END)
         return total_labor_cost
 
 #Calculate Parts Cost
@@ -50,13 +49,11 @@ class Invoice:
         parts_cost = 0
         for e in self.parts_needed:
             parts_cost += e
-        dis.insert(tk.INSERT,"Calculating Parts Cost...")
         return parts_cost
 
 #Calculate Total Cost
     def total_cost_calc(self):
         total_cost = self.parts_cost + self.total_labor_cost
-        dis.insert(tk.INSERT,"Calculating Total Cost...")
         return total_cost
 
 #Calculate ETA
@@ -68,9 +65,8 @@ class Invoice:
     def update_wait_list(self):
         schedule.add_schedule(self.name, self.phone, self.email)
 
-    def display_invoices(self):
-        inv_dis.delete("1.0", tk.END)
-        inv_dis.insert(tk.INSERT,"--------------------------------------------")
+    def display_invoice(self):
+        inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
         inv_dis.insert(tk.INSERT, f"\nName: {self.name} \nDOB: {self.dob} \nPhone: {self.phone} \nEmail: {self.email} \nCard Name: {self.card_name} \nCard Number: {self.card_number} \nCard Expiry: {self.card_expiration} \nCard CVV: {self.card_ccv} \nCar Make: {self.car_make} \nCar Model: {self.car_model} \nCar Color: {self.car_color} \nCar Year: {self.car_year} \nIssue: {self.issue} \nDiag or Repair: {self.diag_or_repair} \nEstimated Labor Hours: {self.est_labor_hrs}")
         inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
 
@@ -225,15 +221,14 @@ def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry
     new_inv.invoice_calc()
     invoices.append(new_inv)
 
-    inv_dis.delete("1.0", tk.END)
-    inv_dis.insert(tk.INSERT, "Invoice Created")
+    inv_dis.insert(tk.INSERT, "\nInvoice Created")
 
 invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
+invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
 
 inventory = Inventory()
 schedule = Scheduling()
-invoice = Invoice()
-invoices = [invent]
+invoices = []
 inventories = [inventory]
 schedules = [schedule]
 
@@ -271,6 +266,7 @@ def schedule_window():
             sch_creator()
 
         elif x == "remsh":
+            s = 1
             sch_dis.delete("1.0", tk.END)
             sch_dis.insert(tk.INSERT, """Enter the name to be removed from schedule\nthen click "Submit" """)
 
@@ -280,17 +276,32 @@ def schedule_window():
 
         elif x == "sub":
             get_ent = sch_ent.get()
+            sch_ent.delete(0, tk.END)
             if len(schedules[0].wait_list) > 0:
                 if s == 1:
-                    schedule.remove_schedule(get_ent)
+                    for e in schedule.wait_list:
+                        if e["Name"].lower() == get_ent.lower():
+                            schedule.remove_schedule(get_ent)
+                            sch_dis.insert(tk.INSERT, "\nSchedule item removed...")
+                        else:
+                            sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
+                    s = 0
                 elif s == 2:
-                    for e in schedules[0].wait_list:
-                        if e["Name"] == get_ent:
-            top.deiconify()
-            sch.withdraw()
+                  for e in schedules[0].wait_list:
+                       if e["Name"] == get_ent:
+                           sch_dis.delete("1.0", tk.END)
+                           sch_dis.insert(tk.INSERT, "Name: " + e["Name"] + "\nPhone: " + e["Phone"] + "\nEmail: " + e["Email"])
+                           s = 0
+                       else:
+                           sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
+            else:
+                sch_dis.delete("1.0", tk.END)
+                sch_dis.insert(tk.INSERT, "\nNo items in the schedule...")
 
         elif x == "sersh":
-
+            s = 2
+            sch_dis.delete("1.0", tk.END)
+            sch_dis.insert(tk.INSERT, """Enter the name you are searching for\nthen click "Submit" """)
 
     ch_sh = Button(sch, text="Check Schedule", width=20, height=2, command=lambda: sch_show("csh"))
     ch_sh.place(x=100, y=330)
@@ -302,6 +313,8 @@ def schedule_window():
     ex.place(x=260, y=380)
     sub = Button(sch, text="Submit", width=10, height=1, command=lambda: sch_show("sub"))
     sub.place(x=478, y=298)
+    sersh = Button(sch, text="Search Schedule", width=20, height=2, command=lambda: sch_show("sersh"))
+    sersh.place(x=100, y=430)
 
 #INVOICES WINDOW--------------------------------------------------------------------------------------------------------
 inv_wind = tk.Toplevel(top)
@@ -326,19 +339,21 @@ def invoices_window():
             inv_create_win()
             inv_wind.withdraw()
         elif x == "show":
+            inv_dis.delete("1.0", tk.END)
             if len(invoices) > 0:
+                inv_dis.insert(tk.INSERT, "Displaying Invoices...")
                 for e in invoices:
-                    e.display_invoices()
+                    e.display_invoice()
             else:
                 inv_dis.delete("1.0", tk.END)
-                inv_dis.insert(tk.INSERT, "\nNo invoices currently saved...")
+                inv_dis.insert(tk.INSERT, "No invoices currently saved...")
         elif x == "del":
-            w += 1
+            w = 1
             inv_dis.delete("1.0", tk.END)
             inv_dis.insert(tk.INSERT, """Enter the name on the invoice in the entry box below then \nclick "Submit" """)
 
         elif x == "serin":
-            w += 2
+            w = 2
             inv_dis.delete("1.0", tk.END)
             inv_dis.insert(tk.INSERT, """Enter the name on the invoice in the entry box below then \nclick "Search Invoices" """)
 
@@ -360,7 +375,7 @@ def invoices_window():
                 if len(invoices) > 0:
                     for e in invoices:
                         if e.name.lower() == nm.lower():
-                            e.display_invoices()
+                            e.display_invoice()
                         else:
                             inv_dis.insert(tk.INSERT, "\n\nNo invoices matching that name...")
                 else:
@@ -436,9 +451,14 @@ def inv_create_win():
     top1.deiconify()
 
     def cr_i():
-        create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
+        try:
+            create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
                                card_name_entry.get(), card_exp_entry.get(), card_cvv_entry.get(), car_make_entry.get(), car_model_entry.get(),
                                car_year_entry.get(), car_color_entry.get(), issue_entry.get(), diag_repair_entry.get(), labor_hours_entry.get())
+        except ValueError:
+            inv_dis.insert(tk.INSERT, "One or more entry boxes were left blank...\nPlease try again...")
+
+
         top1.withdraw()
         inv_wind.deiconify()
 
@@ -563,70 +583,54 @@ def show(x):
         elif x == "save":
             dis.delete("1.0", tk.END)
             dis.insert(tk.INSERT, "Saving...\nSaved...")
-            stored_invoices = open("invoices.dat", "wb")
-            stored_schedule = open("schedule.dat", "wb")
-            stored_inventory = open("inventory.dat", "wb")
 
-            stored_invoices.seek(0)
-            stored_invoices.truncate()
-            stored_schedule.seek(0)
-            stored_schedule.truncate()
-            stored_inventory.seek(0)
-            stored_inventory.truncate()
+            with open("saved_invoices.pk1", "wb") as i:
+                for e in invoices:
+                    pickle.dump(e, i, pickle.HIGHEST_PROTOCOL)
 
-            for inv in invoices:
-                pickle.dump(inv, stored_invoices)
-            pickle.dump(schedules[0], stored_schedule)
-            pickle.dump(inventories[0], stored_inventory)
+            with open("saved_schedule.pk1", "wb") as s:
+                pickle.dump(schedules[0], s, pickle.HIGHEST_PROTOCOL)
 
-            stored_invoices.close()
-            stored_schedule.close()
-            stored_inventory.close()
+            with open("saved_inventory.pk1", "wb") as inv:
+                pickle.dump(inventories[0], inv, pickle.HIGHEST_PROTOCOL)
+
+            with open("invoice_num.dat", "wb") as num:
+                pickle.dump(len(invoices), num)
+
+            i.close()
+            inv.close()
+            s.close()
+            num.close()
 
         elif x == "load":
             dis.delete("1.0", tk.END)
-            dis.insert(tk.INSERT, "Loading...")
-            stored_invoices = open("invoices.dat", "rb")
-            stored_schedule = open("schedule.dat", "rb")
-            stored_inventory = open("inventory.dat", "rb")
+            dis.insert(tk.INSERT, "Loading...\nLoaded...")
+
+            invoices.clear()
+            schedules.clear()
+            inventories.clear()
+            with open("invoice_num.dat", "rb") as num:
+                inv_num = pickle.load(num)
 
             while True:
-
                 try:
-                    loaded_invoices = []
-                    for _ in pickle.load(stored_invoices):
-                        loaded_invoices.append(_)
 
-                    for e in loaded_invoices:
-                        invoices.pop(e)
-
-                    for e in loaded_invoices:
-                        invoices.append(e)
-
-                    dis.insert(tk.INSERT, "Invoices Loaded...")
+                    with open("saved_invoices.pk1", "rb") as i:
+                        loaded_invoices = pickle.load(i)
+                        invoices.append(loaded_invoices)
+                        while inv_num > 0:
+                            invoices.append(pickle.load(i))
+                            inv_num -= 1
 
                 except EOFError:
-                    continue
+                    break
 
-                try:
-                    loaded_schedule = pickle.load(stored_schedule)
-                    schedules.pop()
-                    schedules.append(loaded_schedule)
+            with open("saved_schedule.pk1", "rb") as s:
+                 schedules.append(pickle.load(s))
 
-                    dis.insert(tk.INSERT, "Schedule Loaded...")
+            with open("saved_inventory.pk1", "rb") as inv:
+                inventories.append(pickle.load(inv))
 
-                except EOFError:
-                    continue
-
-                try:
-                    loaded_inventory = pickle.load(stored_inventory)
-                    inventories.pop()
-                    inventories.append(loaded_inventory)
-
-                    dis.insert(tk.INSERT, "Inventory Loaded...")
-
-                except EOFError:
-                    continue
         elif x == "exit":
             top.quit()
         else:
