@@ -172,7 +172,7 @@ class Scheduling:
         self.name = ""
         self.phone = ""
         self.email = ""
-        self.wait_list = [{"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"}]
+        self.wait_list = []
         self.total_scheduled = 1
 
 #Add to Schedule
@@ -223,14 +223,18 @@ def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry
 
     inv_dis.insert(tk.INSERT, "\nInvoice Created")
 
-invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
-invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
+#SAVE FILES-------------------------------------------------------------------------------------------------------------
+
+#invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
+#invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
 
 inventory = Inventory()
 schedule = Scheduling()
 invoices = []
 inventories = [inventory]
 schedules = [schedule]
+
+#schedule.wait_list.append({"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"})
 
 #MAIN MENU--------------------------------------------------------------------------------------------------------------
 
@@ -241,6 +245,7 @@ dis = Text(width=60, height=15)
 dis.place(x=100, y=50)
 
 #SCHEDULE WINDOW--------------------------------------------------------------------------------------------------------
+
 sch = tk.Toplevel(top)
 sch.geometry("700x500")
 sch.title("Scheduling")
@@ -260,15 +265,24 @@ def schedule_window():
     def sch_show(x):
         global s
         if x == "csh":
-            schedule.check_schedule()
+            if len(schedule.wait_list) > 0:
+                schedule.check_schedule()
+            else:
+                sch_dis.delete("1.0", tk.END)
+                sch_dis.insert(tk.INSERT, "No jobs scheduled...")
 
         elif x == "addsh":
             sch_creator()
 
         elif x == "remsh":
-            s = 1
-            sch_dis.delete("1.0", tk.END)
-            sch_dis.insert(tk.INSERT, """Enter the name to be removed from schedule\nthen click "Submit" """)
+            if len(schedule.wait_list) > 0:
+                s = 1
+                sch_dis.delete("1.0", tk.END)
+                sch_dis.insert(tk.INSERT, """Enter the name to be removed from schedule\nthen click "Submit" """)
+            else:
+                sch_dis.delete("1.0", tk.END)
+                sch_dis.insert(tk.INSERT, "\nNo items in the schedule...")
+                s = 0
 
         elif x == "exit":
             top.deiconify()
@@ -277,31 +291,32 @@ def schedule_window():
         elif x == "sub":
             get_ent = sch_ent.get()
             sch_ent.delete(0, tk.END)
-            if len(schedules[0].wait_list) > 0:
-                if s == 1:
-                    for e in schedule.wait_list:
-                        if e["Name"].lower() == get_ent.lower():
-                            schedule.remove_schedule(get_ent)
-                            sch_dis.insert(tk.INSERT, "\nSchedule item removed...")
-                        else:
-                            sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
-                    s = 0
-                elif s == 2:
-                  for e in schedules[0].wait_list:
-                       if e["Name"] == get_ent:
-                           sch_dis.delete("1.0", tk.END)
-                           sch_dis.insert(tk.INSERT, "Name: " + e["Name"] + "\nPhone: " + e["Phone"] + "\nEmail: " + e["Email"])
-                           s = 0
-                       else:
-                           sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
+            if s == 1:
+                for e in schedule.wait_list:
+                    if e["Name"].lower() == get_ent.lower():
+                        schedule.remove_schedule(get_ent)
+                        sch_dis.insert(tk.INSERT, "\nSchedule item removed...")
+                    else:
+                        sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
+                s = 0
+            elif s == 2:
+                for e in schedules[0].wait_list:
+                    if e["Name"] == get_ent:
+                        sch_dis.delete("1.0", tk.END)
+                        sch_dis.insert(tk.INSERT, "Name: " + e["Name"] + "\nPhone: " + e["Phone"] + "\nEmail: " + e["Email"])
+                    else:
+                        sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
+                s = 0
+
+        elif x == "sersh":
+            if len(schedule.wait_list) > 0:
+                s = 2
+                sch_dis.delete("1.0", tk.END)
+                sch_dis.insert(tk.INSERT, """Enter the name you are searching for\nthen click "Submit" """)
             else:
                 sch_dis.delete("1.0", tk.END)
                 sch_dis.insert(tk.INSERT, "\nNo items in the schedule...")
-
-        elif x == "sersh":
-            s = 2
-            sch_dis.delete("1.0", tk.END)
-            sch_dis.insert(tk.INSERT, """Enter the name you are searching for\nthen click "Submit" """)
+                s = 0
 
     ch_sh = Button(sch, text="Check Schedule", width=20, height=2, command=lambda: sch_show("csh"))
     ch_sh.place(x=100, y=330)
@@ -317,6 +332,7 @@ def schedule_window():
     sersh.place(x=100, y=430)
 
 #INVOICES WINDOW--------------------------------------------------------------------------------------------------------
+
 inv_wind = tk.Toplevel(top)
 inv_wind.geometry("700x500")
 inv_wind.title("Invoices")
@@ -348,41 +364,46 @@ def invoices_window():
                 inv_dis.delete("1.0", tk.END)
                 inv_dis.insert(tk.INSERT, "No invoices currently saved...")
         elif x == "del":
-            w = 1
-            inv_dis.delete("1.0", tk.END)
-            inv_dis.insert(tk.INSERT, """Enter the name on the invoice in the entry box below then \nclick "Submit" """)
+            if len(invoices) > 0:
+                w = 1
+                inv_dis.delete("1.0", tk.END)
+                inv_dis.insert(tk.INSERT, """Enter the name on the invoice in the entry box below then \nclick "Submit" """)
+            else:
+                inv_dis.delete("1.0", tk.END)
+                inv_dis.insert(tk.INSERT, "No invoices currently saved...")
+                w = 0
 
         elif x == "serin":
-            w = 2
-            inv_dis.delete("1.0", tk.END)
-            inv_dis.insert(tk.INSERT, """Enter the name on the invoice in the entry box below then \nclick "Search Invoices" """)
+            if len(invoices) > 0:
+                w = 2
+                inv_dis.delete("1.0", tk.END)
+                inv_dis.insert(tk.INSERT, """Enter the name on the invoice in the entry box below then \nclick "Search Invoices" """)
+            else:
+                inv_dis.delete("1.0", tk.END)
+                inv_dis.insert(tk.INSERT, "No invoices currently saved...")
+                w = 0
 
         elif x == "submit":
             nm = inv_ent.get()
             inv_ent.delete(0, tk.END)
             if w == 1:
-                if len(invoices) > 0:
-                    for e in invoices:
-                        if e.name.lower() == nm.lower():
-                            invoices.remove(e)
-                            inv_dis.insert(tk.INSERT, f"""\n\nInvoice matching name "{nm}" deleted...""")
-                        else:
-                            inv_dis.insert(tk.INSERT, f"""\n\nNo invoice found matching name "{nm}"... """)
-                elif len(invoices) == 0:
-                    inv_dis.insert(tk.INSERT, "\n\nNo invoices currently saved...")
+                for e in invoices:
+                    if e.name.lower() == nm.lower():
+                        invoices.remove(e)
+                        inv_dis.insert(tk.INSERT, f"""\n\nInvoice matching name "{nm}" deleted...""")
+                    else:
+                        inv_dis.insert(tk.INSERT, f"""\n\nNo invoice found matching name "{nm}"... """)
                 w = 0
             elif w == 2:
-                if len(invoices) > 0:
-                    for e in invoices:
-                        if e.name.lower() == nm.lower():
-                            e.display_invoice()
-                        else:
-                            inv_dis.insert(tk.INSERT, "\n\nNo invoices matching that name...")
-                else:
-                    inv_dis.insert(tk.INSERT, "\n\nNo invoices currently saved...")
+                for e in invoices:
+                    if e.name.lower() == nm.lower():
+                        e.display_invoice()
+                    else:
+                        inv_dis.insert(tk.INSERT, "\n\nNo invoices matching that name...")
                 w = 0
             else:
                 inv_dis.insert(tk.INSERT, "\nError")
+
         elif x == "exit":
             top.deiconify()
             inv_wind.withdraw()
@@ -406,6 +427,7 @@ def invoices_window():
     ser_in.place(x=100, y=425)
 
 #INVENTORY WINDOW-------------------------------------------------------------------------------------------------------
+
 int_men = tk.Toplevel(top)
 int_men.geometry("700x500")
 int_men.title("Inventory")
@@ -440,6 +462,7 @@ def inventory_menu():
     int_update.place(x=260, y=305)
 
 #INVOICE CREATOR WINDOW-------------------------------------------------------------------------------------------------
+
 top1 = tk.Toplevel(top)
 top1.title("Invoice Creation")
 top1.geometry("500x575")

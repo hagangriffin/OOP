@@ -1,3 +1,5 @@
+import pickle
+
 class Book:
     def __init__(self, bid = 0, title = "", author_id = 0, publisher = "", year = ""):
         self.bid = bid
@@ -14,7 +16,7 @@ class Book:
         new_book = Book(self.bid, self.title, self.author_id, self.publisher, self.year_published)
         books.append(new_book)
     def display_books(self):
-        print("\n| Book ID: ", self.bid, "| Book Title: ", self.title, "| Book Author ID: ", self.author_id, "| Book Publisher: ", self.publisher, "| Year Published: ", self.year_published)
+        print("\nBook ID: ", self.bid, "Book Title: ", self.title, "Book Author ID: ", self.author_id, "Book Publisher: ", self.publisher, "Year Published: ", self.year_published)
 class Author:
     def __init__(self, aid = 0, name = "", affil = "", country = "", phone = "", email = ""):
         self.aid = aid
@@ -33,7 +35,7 @@ class Author:
         new_author = Author(self.aid, self.name, self.affil, self.country, self.phone, self.email)
         authors.append(new_author)
     def display_authors(self):
-        print("\n| Author ID: ", self.aid, "| Author Name: ", self.name, "| Author Affiliation: ", self.affil, "| Author Country: ", self.country, "| Author Phone: ", self.phone, "| Author Email: ", self.email)
+        print("\nAuthor ID: ", self.aid, "Author Name: ", self.name, "Author Affiliation: ", self.affil, "Author Country: ", self.country, "Author Phone: ", self.phone, "Author Email: ", self.email)
 class User:
     def __init__(self, uid = 0, name = "", password = "", address = "", phone = "", email = ""):
         self.uid = uid
@@ -53,21 +55,18 @@ class User:
         new_user = User(self.uid, self.name, self.password, self.address, self.phone, self.email)
         users.append(new_user)
 
-    def borrow_book(self, un):
+    def borrow_book(self):
         book = int(input("What is the id of the book? "))
         found = False
-        for j in users:
-            if j.uid == un:
-                for i in books:
-                    if i.bid == book:
-                        j.books_borrowed.append(i)
-                        print("Book borrowed successfully")
-                        found = True
+        for i in books:
+            if i.bid == book:
+                self.books_borrowed.append(e)
+                found = True
         if not found:
             print("This book does not exist")
 
     def display_users(self):
-        print("\n| User ID: ", self.uid, "| User Name: ", self.name, "| User Password: ", self.password, "| User Address: ", self.address, "| User Phone: ", self.phone, "| User Email: ", self.email)
+        print("\nUser ID: ", self.uid, "User Name: ", self.name, "User Password: ", self.password, "User Address: ", self.address, "User Phone: ", self.phone, "User Email: ", self.email)
 
 b1 = Book(1, "Dragon's Lair", 1, "Maximum Publishing", "2005")
 b2 = Book(2, "Ghosted", 2, "Perfect Publishing", "2015")
@@ -87,7 +86,7 @@ authors = [a1, a2, a3]
 
 while True:
     print("--------------------------")
-    print("\n1. Display Books\n2. Display Authors\n3. Display Users\n4. Add Book\n5. Add Author\n6. Add User\n7. Borrow Book\n8. List Borrowed Books\n9. Exit")
+    print("\n1. Display Books\n2. Display Authors\n3. Display Users\n4. Add Book\n5. Add Author\n6. Add User\n7. Borrow Book\n8. List Borrowed Books\n9. Exit\n10. Write to File\n11. Read from File")
     ch = int(input("What is your choice? "))
     if ch == 1:
         for b in books:
@@ -118,7 +117,7 @@ while True:
         u_true = False
         for e in users:
             if e.uid == u:
-                e.borrow_book(u)
+                e.borrow_book()
                 u_true = True
         if not u_true:
             print("That user does not exist")
@@ -128,11 +127,45 @@ while True:
         check = False
         for h in users:
             if h.uid == us:
-                for z in h.books_borrowed:
-                    print(z.title)
+                for e in h.books_borrowed:
+                    print(e.title)
                 check = True
         if not check:
             print("That user does not exist")
     elif ch == 9:
         print("Exiting Program...")
         break
+    elif ch == 10:
+        book_storage = open("book_data.dat", "ab")
+        author_storage = open("author_data.dat", "ab")
+        user_storage = open("user_data.dat", "ab")
+        for b in books:
+            pickle.dump(b, book_storage)
+        for a in authors:
+            pickle.dump(a, author_storage)
+        for u in users:
+            pickle.dump(u, user_storage)
+        book_storage.close()
+        author_storage.close()
+        user_storage.close()
+    elif ch == 11:
+        book = open("book_data.dat", "rb")
+        author = open("author_data.dat", "rb")
+        user = open("user_data.dat", "rb")
+        while 1:
+            try:
+                loaded_books = pickle.load(book)
+                loaded_books.display_books()
+            except EOFError:
+                continue
+            try:
+                loaded_authors = pickle.load(author)
+                loaded_authors.display_authors()
+            except EOFError:
+                continue
+            try:
+                loaded_users = pickle.load(user)
+                loaded_users.display_users()
+            except EOFError:
+                continue
+
