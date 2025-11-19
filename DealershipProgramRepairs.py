@@ -609,15 +609,19 @@ def show(x):
 
             with open("saved_invoices.pk1", "wb") as i:
                 for e in invoices:
+                    # noinspection PyTypeChecker
                     pickle.dump(e, i, pickle.HIGHEST_PROTOCOL)
 
             with open("saved_schedule.pk1", "wb") as s:
+                # noinspection PyTypeChecker
                 pickle.dump(schedules[0], s, pickle.HIGHEST_PROTOCOL)
 
             with open("saved_inventory.pk1", "wb") as inv:
+                # noinspection PyTypeChecker
                 pickle.dump(inventories[0], inv, pickle.HIGHEST_PROTOCOL)
 
             with open("invoice_num.dat", "wb") as num:
+                # noinspection PyTypeChecker
                 pickle.dump(len(invoices), num)
 
             i.close()
