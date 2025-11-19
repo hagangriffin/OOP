@@ -612,7 +612,7 @@ def show(x):
                     # noinspection PyTypeChecker
                     pickle.dump(e, i, pickle.HIGHEST_PROTOCOL)
 
-            with open("saved_schedule.pk1", "wb") as s:
+            with open("saved_schedule.pk1", "wb") as ss:
                 # noinspection PyTypeChecker
                 pickle.dump(schedules[0], s, pickle.HIGHEST_PROTOCOL)
 
@@ -626,7 +626,7 @@ def show(x):
 
             i.close()
             inv.close()
-            s.close()
+            ss.close()
             num.close()
 
         elif x == "load":
@@ -652,8 +652,8 @@ def show(x):
                 except EOFError:
                     break
 
-            with open("saved_schedule.pk1", "rb") as s:
-                 schedules.append(pickle.load(s))
+            with open("saved_schedule.pk1", "rb") as ss:
+                 schedules.append(pickle.load(ss))
 
             with open("saved_inventory.pk1", "rb") as inv:
                 inventories.append(pickle.load(inv))
