@@ -251,6 +251,7 @@ l.place(x=175, y=30)
 
 top = Toplevel(main)
 top.geometry("700x500")
+top.withdraw()
 
 dis = Text(top, width=60, height=15)
 dis.place(x=100, y=50)
