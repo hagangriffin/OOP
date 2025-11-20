@@ -246,8 +246,8 @@ main = Tk()
 main.geometry("500x300")
 main.title("Main Menu")
 
-l = Label(main, text="Main Menu", width=20, height=2, background="Grey")
-l.place(x=175, y=30)
+l = Label(main, text="Main Menu", width=55, height=2, background="Grey")
+l.place(x=52, y=30)
 
 top = Toplevel(main)
 top.geometry("700x500")
@@ -671,7 +671,8 @@ def show(x):
                 inventories.append(pickle.load(inv))
 
         elif x == "exit":
-            top.quit()
+            top.withdraw()
+            main.deiconify()
         else:
             dis.insert(tk.INSERT, "\n\nInvalid Input")
 
@@ -710,10 +711,14 @@ def main_show(x):
     elif x == "rep":
         main.withdraw()
         top.deiconify()
+    elif x == "ex":
+        main.quit()
 
 dealer = Button(main, text="Dealership", width=20, height=8, background="Grey", command=lambda: main_show("del"))
 dealer.place(x=50, y=100)
 repair = Button(main, text="Repair Shop", width=20, height=8, background="Gray", command=lambda: main_show("rep"))
 repair.place(x=295, y=100)
+main_exit = Button(main, text="Exit", width=15, height=2, background="Gray", command=lambda: main_show("ex"))
+main_exit.place(x=190, y=250)
 
 main.mainloop()
