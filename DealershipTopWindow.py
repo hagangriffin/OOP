@@ -226,9 +226,6 @@ def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry
 
 #SAVE FILES-------------------------------------------------------------------------------------------------------------
 
-#invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
-#invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
-
 inventory = Inventory()
 schedule = Scheduling()
 invoices = []
@@ -236,6 +233,9 @@ inventories = [inventory]
 schedules = [schedule]
 
 #schedule.wait_list.append({"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"})
+#invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15", 16)
+#invent2 = Invoice(2, "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", 25)
+#invoices.append(invent, invent2)
 
 #MAIN MENU--------------------------------------------------------------------------------------------------------------
 
