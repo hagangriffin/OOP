@@ -337,7 +337,7 @@ def schedule_window():
     add_sh.place(x=100, y=380)
     rem_sh = Button(sch, text="Remove from Schedule", width=20, height=2, command=lambda: sch_show("remsh"))
     rem_sh.place(x=260, y=330)
-    ex = Button(sch, text="Exit", width=15, height=2, command=lambda: sch_show("exit"))
+    ex = Button(sch, text="Exit", width=15, height=2, bg='red', command=lambda: sch_show("exit"))
     ex.place(x=260, y=380)
     sub = Button(sch, text="Submit", width=10, height=1, command=lambda: sch_show("sub"))
     sub.place(x=478, y=298)
@@ -430,7 +430,7 @@ def invoices_window():
     del_in = Button(inv_wind, text="Delete Invoice", width=20, height=2, command=lambda: inv_show("del"))
     del_in.place(x=260, y=325)
 
-    exit_in = Button(inv_wind, text="Exit", width=15, height=2, command=lambda: inv_show("exit"))
+    exit_in = Button(inv_wind, text="Exit", width=15, height=2, bg='red', command=lambda: inv_show("exit"))
     exit_in.place(x=260, y=375)
 
     submit = Button(inv_wind, text="Submit", width=12, height=1, command=lambda: inv_show("submit"))
@@ -468,7 +468,7 @@ def inventory_menu():
     int_check = Button(int_men, text="Check Inventory", width=20, height=2, command=lambda: int_show("intcheck"))
     int_check.place(x=100, y=305)
 
-    int_exit = Button(int_men, text="Exit", width=15, height=2, command=lambda: int_show("exit"))
+    int_exit = Button(int_men, text="Exit", width=15, height=2, bg='red', command=lambda: int_show("exit"))
     int_exit.place(x=100, y=355)
 
     int_update = Button(int_men, text="Update Inventory", width=20, height=2, command=lambda: int_show("upint"))
@@ -684,14 +684,17 @@ ch_in.place(x=110, y=355)
 sh = Button(top, text="Scheduling Menu", width=20, height=2, command=lambda: show("sch"))
 sh.place(x=110, y=405)
 
-save = Button(top, text="Save", width=15, height=2, command=lambda: show("save"))
+save = Button(top, text="Save", width=15, height=2, bg='grey', command=lambda: show("save"))
 save.place(x=270, y=305)
-load = Button(top, text="Load", width=15, height=2, command=lambda: show("load"))
+load = Button(top, text="Load", width=15, height=2, bg='grey', command=lambda: show("load"))
 load.place(x=270, y=355)
-exi = Button(top, text="Exit", width=15, height=2, command=lambda: show("exit"))
+exi = Button(top, text="Exit", width=15, height=2, bg='red', command=lambda: show("exit"))
 exi.place(x=270, y=405)
 
 #DEALERSHIP MENU--------------------------------------------------------------------------------------------------------
+
+totalSalesFinalVariableIDEK = 0  # why did i put this at the top idecatp
+
 
 class Car:
     def __init__(self, make, model, year, color, price, repBool, count=1):
@@ -704,7 +707,7 @@ class Car:
         self.count = count
 
     def __str__(self):
-        return f'{self.year} {self.make} {self.model} ({self.color}) | ${self.price:,.2f} | Requires Repairs: {self.repBool} | Count: {self.count}'
+        return f'{self.year} {self.make} {self.model} ({self.color}) | ${self.price:,.2f} | Requires Repairs: {self.repBool}'
 
 
 class Inventory:
@@ -732,7 +735,7 @@ class Inventory:
             car = self.cars[index]
             if car.count >= 1:
                 totalPrice = car.price
-                print(f'Sold {count} {car.make} {car.model}(s) for ${totalPrice:,.2f}')
+                print(f'Sold {car.make} {car.model}(s) for ${totalPrice:,.2f}')
                 self.sales.append(f"{car.year} {car.make} {car.model} ({car.color}) for ${car.price:,.2f}")
                 self.cars.remove(car)
                 return totalPrice
@@ -743,59 +746,25 @@ class Inventory:
             print('Invalid car selection.')
             return 0
 
+    def sellCar(self, make, model, year, color, price, repBoolYN):
+        tempBool = (repBoolYN == 'Y')
+        for car in self.cars:
+            if (car.make == make and car.model == model and car.year == year and
+                    car.color == color and car.price == price and car.repBool == tempBool):
+                self.cars.remove(car)
+                self.sales.append(car)
+                print(f'Sold {car}')
+                return car
+        return None
+
 
 class DealershipOOP:
     def __init__(self):
         self.inventory = Inventory()
         self.totalSales = 0
 
-    def menu(self):
-        while True:
-            print('\n1. Add Car to Inventory\n'
-                    '2. Show Inventory\n'
-                    '3. Sell a Car\n'
-                    '4. Show Sales\n'
-                    '5. Quit\n')
-            choice = input('Choose option: ')
 
-            if choice == '1':
-                make = input('Make: ')
-                model = input('Model: ')
-                year = input('Year: ')
-                color = input('Color: ')
-                price = float(input('Price: '))
-                ynRep = input('Requires Repairs? (Y/N) ')
-                if ynRep.upper() == 'Y':
-                    repBool = True
-                else:
-                    repBool = False
-                Count = int(input('Count: '))
-                self.inventory.addCar(make, model, year, color, price, repBool, Count)
-
-            elif choice == '2':
-                self.inventory.displayInv()
-
-            elif choice == '3':
-                self.inventory.displayInv()
-                if not self.inventory.cars:
-                    continue
-                index = int(input('Select which car you would like to sell: ')) - 1
-                sale = self.inventory.sell(index, 1)
-                self.totalSales += sale
-
-            elif choice == '4':
-                for sales in self.inventory.sales:
-                    print(sales)
-                print(f'\nTotal Sales so far: ${self.totalSales:,.2f}\n')
-
-            elif choice == '5':
-                break
-
-            else:
-                print('Invalid choice.\n')
-
-app=DealershipOOP()
-
+app = DealershipOOP()
 
 root = tk.Toplevel(main)
 root.title('Dealership Application')
@@ -803,57 +772,97 @@ root.geometry('800x600')
 root.resizable(False, False)
 root.withdraw()
 
-
 notebook = ttk.Notebook(root)
 notebook.pack(expand=True, fill='both')
 
 # Frame Creation:
 AddFrame = tk.Frame(notebook, width=500, height=500)
 InventoryFrame = tk.Frame(notebook, width=500, height=500)
-#SellFrame = tk.Frame(notebook, width=500, height=500)
+
 SalesFrame = tk.Frame(notebook, width=500, height=500)
-SearchFrame = tk.Frame(notebook, width=500, height=500)
+# SearchFrame = tk.Frame(notebook, width=500, height=500)
 
 AddFrame.pack()
 InventoryFrame.pack()
-#SellFrame.pack()
+
 SalesFrame.pack()
-SearchFrame.pack()
+# SearchFrame.pack()
 
 notebook.add(AddFrame, text='Add Car')
 notebook.add(InventoryFrame, text='Inventory')
-#notebook.add(SellFrame, text='Sell Car')
+
 notebook.add(SalesFrame, text='Sales History')
-notebook.add(SearchFrame, text='Search Car')
+
+# notebook.add(SearchFrame, text='Search Car')
+
+def sellOnSelect():
+    selected_item = tree.selection()
+    if selected_item:
+        item_id = selected_item[0]
+        values = tree.item(item_id, "values")
+
+        make = values[0]
+        model = values[1]
+        year = values[2]
+        color = values[3]
+        price = float(values[4].replace('$', '').replace(',', ''))
+        repBoolYN = values[5]
+
+        app.inventory.sellCar(make, model, year, color, price, repBoolYN)
+        updateTab(None)
+
 def updateTab(event):
     selectedTab = notebook.select()
     print(f'Selected tab: {selectedTab}')
+    global totalSalesFinalVariableIDEK
     if selectedTab == '.!notebook.!frame2':
         for widget in tree.winfo_children():
             widget.destroy()
         for item in tree.get_children():
             tree.delete(item)
         for car in app.inventory.cars:
-            tree.insert('', tk.END, text=car, values=(car.make, car.model, car.year, car.color, f'${car.price:,.2f}'))
+            if car.repBool:
+                check = 'Y'
+            else:
+                check = 'N'
+            tree.insert('', tk.END, text=car,
+                        values=(car.make, car.model, car.year, car.color, f'${car.price:,.2f}', check))
+    elif selectedTab == '.!notebook.!frame3':
+        for widget in Salestree.winfo_children():
+            widget.destroy()
+        for item in Salestree.get_children():
+            Salestree.delete(item)
+        for car in app.inventory.sales:
+            if car.repBool:
+                check = 'Y'
+            else:
+                check = 'N'
+            Salestree.insert('', tk.END, text=car,
+                             values=(car.make, car.model, car.year, car.color, f'${car.price:,.2f}', check))
+            totalSalesFinalVariableIDEK += car.price
+            totalSalesLabel.config(text=f'Total Sales: ${totalSalesFinalVariableIDEK:,.2f}')
+
 notebook.bind('<<NotebookTabChanged>>', updateTab)
 
-#<--------------------Add Car Frame------------------>:
-makeVar=tk.StringVar()
-modelVar=tk.StringVar()
-yearVar=tk.StringVar()
-colorVar=tk.StringVar()
-priceVar=tk.StringVar()
+# <--------------------Add Car Frame------------------>:
+makeVar = tk.StringVar()
+modelVar = tk.StringVar()
+yearVar = tk.StringVar()
+colorVar = tk.StringVar()
+priceVar = tk.StringVar()
 repairCheck = tk.IntVar()
+
 def submit():
+    global totalSalesFinalVariableIDEK
     if repairCheck.get() == 1:
         repBool = True
     else:
         repBool = False
-    make=makeVar.get()
-    model=modelVar.get()
-    year=yearVar.get()
-    color=colorVar.get()
-    price=float(priceVar.get())
+    make = makeVar.get()
+    model = modelVar.get()
+    year = yearVar.get()
+    color = colorVar.get()
+    price = float(priceVar.get())
     app.inventory.addCar(make, model, year, color, price, repBool, 1)
     makeEntry.delete(0, tk.END)
     modelEntry.delete(0, tk.END)
@@ -862,24 +871,57 @@ def submit():
     priceEntry.delete(0, tk.END)
     repairCheckbox.deselect()
 
-makeLabel = tk.Label(AddFrame, text='Make: ', font=('calibre',10,'bold'))
-makeEntry = tk.Entry(AddFrame, textvariable= makeVar, font=('calibre',10,'normal'))
+def loadDefaults():
+    dummyCars = [
+        ("Toyota", "Camry", "2019", "Silver", 18500, False),
+        ("Honda", "Civic", "2020", "Blue", 19500, False),
+        ("Ford", "F-150", "2018", "Red", 27000, True),
+        ("Chevrolet", "Malibu", "2017", "Black", 15000, False),
+        ("Tesla", "Model 3", "2021", "White", 38000, False),
+        ("BMW", "X5", "2019", "Gray", 45000, True),
+        ("Audi", "A4", "2018", "Black", 28000, False),
+        ("Nissan", "Altima", "2020", "Blue", 21000, False),
+        ("Hyundai", "Tucson", "2017", "Red", 17000, True),
+        ("Kia", "Sorento", "2019", "Silver", 25000, False),
+        ("Subaru", "Outback", "2018", "Green", 23000, False),
+        ("Volkswagen", "Jetta", "2016", "White", 12000, True),
+        ("Dodge", "Charger", "2020", "Black", 30000, False),
+        ("Jeep", "Wrangler", "2019", "Yellow", 34000, True),
+        ("Mazda", "CX-5", "2021", "Red", 29000, False)
+    ]
+
+    for make, model, year, color, price, repBool in dummyCars:
+        app.inventory.addCar(make, model, year, color, price, repBool, 1)
+
+def leave():
+    root.withdraw()
+    main.deiconify()
+
+makeLabel = tk.Label(AddFrame, text='Make: ', font=('calibre', 10, 'bold'))
+makeEntry = tk.Entry(AddFrame, textvariable=makeVar, font=('calibre', 10, 'normal'))
+
 modelLabel = tk.Label(AddFrame, text='Model: ', font=('calibre', 10, 'bold'))
 modelEntry = tk.Entry(AddFrame, textvariable=modelVar, font=('calibre', 10, 'normal'))
 
-yearLabel = tk.Label(AddFrame, text='Year: ', font=('calibre',10,'bold'))
-yearEntry = tk.Entry(AddFrame, textvariable= yearVar, font=('calibre',10,'normal'))
-colorLabel = tk.Label(AddFrame, text='Color: ', font=('calibre',10,'bold'))
-colorEntry = tk.Entry(AddFrame, textvariable= colorVar, font=('calibre',10,'normal'))
-priceLabel = tk.Label(AddFrame, text='Price: $', font=('calibre',10,'bold'))
-priceEntry = tk.Entry(AddFrame, textvariable= priceVar, font=('calibre',10,'normal'))
+yearLabel = tk.Label(AddFrame, text='Year: ', font=('calibre', 10, 'bold'))
+yearEntry = tk.Entry(AddFrame, textvariable=yearVar, font=('calibre', 10, 'normal'))
 
-#repairLabel = tk.Label(AddFrame, text='Requires Repairs: ', font=('calibre',10,'bold'))
+colorLabel = tk.Label(AddFrame, text='Color: ', font=('calibre', 10, 'bold'))
+colorEntry = tk.Entry(AddFrame, textvariable=colorVar, font=('calibre', 10, 'normal'))
+
+priceLabel = tk.Label(AddFrame, text='Price: $', font=('calibre', 10, 'bold'))
+priceEntry = tk.Entry(AddFrame, textvariable=priceVar, font=('calibre', 10, 'normal'))
+
+# repairLabel = tk.Label(AddFrame, text='Requires Repairs: ', font=('calibre',10,'bold'))
 repairCheckbox = tk.Checkbutton(AddFrame, text='Requires Repairs', variable=repairCheck)
 
-submitButton = tk.Button(AddFrame,text='Submit',command=submit)
+submitButton = tk.Button(AddFrame, text='Submit', command=submit)
+loadDefaultsButton = tk.Button(AddFrame, text='Load Defaults: Debugging Only', bg='lightgray', command=loadDefaults)
+loadDefaultsButton.grid(row=8, column=5, pady=10)
+exit_but = tk.Button(AddFrame, text='Exit', width=10, bg='red', command=leave)
+exit_but.grid(row=10, column=5, pady=15)
 
-makeLabel.grid(row=1,column=4)
+makeLabel.grid(row=1, column=4)
 makeEntry.grid(row=1, column=5)
 
 modelLabel.grid(row=2, column=4)
@@ -893,9 +935,9 @@ colorEntry.grid(row=4, column=5)
 
 priceLabel.grid(row=5, column=4)
 priceEntry.grid(row=5, column=5)
-repairCheckbox.grid(row=6,column=5)
+repairCheckbox.grid(row=6, column=5)
 
-submitButton.grid(row=7,column=5)
+submitButton.grid(row=7, column=5)
 
 # <--------------------Inventory Frame------------------>:
 columns = ("Make", "Model", "Year", 'Color', 'Price', 'Needs Repairs')
@@ -903,14 +945,35 @@ tree = ttk.Treeview(InventoryFrame, columns=columns, show="headings", selectmode
 for col in columns:
     tree.heading(col, text=col)
     if col == "Make":
-        tree.column(col, width=100, anchor="w")
+        tree.column(col, width=100, anchor="center")
     elif col == "Model":
-        tree.column(col, width=100, anchor="w")
+        tree.column(col, width=100, anchor="center")
     elif col == 'Needs Repairs':
-        tree.column(col, width=50, anchor='w')
+        tree.column(col, width=50, anchor='center')
     else:
-        tree.column(col, width=100, anchor="w")
+        tree.column(col, width=100, anchor="center")
 tree.pack(fill="both", expand=True, padx=8, pady=6)
+
+sellButton = tk.Button(InventoryFrame, text='SELL', bg='red', height=2, width=10, command=sellOnSelect)
+sellButton.pack(padx=10, pady=10, side=tk.LEFT, anchor='w')
+
+# <--------------------Sales Frame------------------>:
+Salestree = ttk.Treeview(SalesFrame, columns=columns, show="headings", selectmode="browse")
+for col in columns:
+    Salestree.heading(col, text=col)
+    if col == "Make":
+        Salestree.column(col, width=100, anchor="center")
+    elif col == "Model":
+        Salestree.column(col, width=100, anchor="center")
+    elif col == 'Needs Repairs':
+        Salestree.column(col, width=50, anchor='center')
+    else:
+        Salestree.column(col, width=100, anchor="center")
+Salestree.pack(fill="both", expand=True, padx=8, pady=6)
+
+totalSalesLabel = tk.Label(SalesFrame, text=f'Total Sales: ${totalSalesFinalVariableIDEK:,.2f}')
+totalSalesLabel.pack(padx=10, pady=10, anchor='center')
+
 
 #MAIN MENU--------------------------------------------------------------------------------------------------------------
 
@@ -928,7 +991,7 @@ dealer = Button(main, text="Dealership", width=20, height=8, background="Grey", 
 dealer.place(x=50, y=100)
 repair = Button(main, text="Repair Shop", width=20, height=8, background="Gray", command=lambda: main_show("rep"))
 repair.place(x=295, y=100)
-main_exit = Button(main, text="Exit", width=15, height=2, background="Gray", command=lambda: main_show("ex"))
+main_exit = Button(main, text="Exit", width=15, height=2, background="red", command=lambda: main_show("ex"))
 main_exit.place(x=190, y=250)
 
 main.mainloop()
