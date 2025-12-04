@@ -295,8 +295,10 @@ def schedule_window():
                 for e in schedule.wait_list:
                     if e["Name"].lower() == get_ent.lower():
                         schedule.remove_schedule(get_ent)
+                        sch_dis.delete("1.0", tk.END)
                         sch_dis.insert(tk.INSERT, "\nSchedule item removed...")
                     else:
+                        sch_dis.delete("1.0", tk.END)
                         sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
                 s = 0
             elif s == 2:
@@ -305,6 +307,7 @@ def schedule_window():
                         sch_dis.delete("1.0", tk.END)
                         sch_dis.insert(tk.INSERT, "Name: " + e["Name"] + "\nPhone: " + e["Phone"] + "\nEmail: " + e["Email"])
                     else:
+                        sch_dis.delete("1.0", tk.END)
                         sch_dis.insert(tk.INSERT, "\nNo items in schedule matching search term...")
                 s = 0
 
@@ -390,18 +393,22 @@ def invoices_window():
                 for e in invoices:
                     if e.name.lower() == nm.lower():
                         invoices.remove(e)
+                        inv_dis.delete("1.0", tk.END)
                         inv_dis.insert(tk.INSERT, f"""\n\nInvoice matching name "{nm}" deleted...""")
-                    else:
+                    elif e.name.lower() != nm.lower():
+                        inv_dis.delete("1.0", tk.END)
                         inv_dis.insert(tk.INSERT, f"""\n\nNo invoice found matching name "{nm}"... """)
                 w = 0
             elif w == 2:
                 for e in invoices:
                     if e.name.lower() == nm.lower():
                         e.display_invoice()
-                    else:
+                    elif e.name.lower() != nm.lower():
+                        inv_dis.delete("1.0", tk.END)
                         inv_dis.insert(tk.INSERT, "\n\nNo invoices matching that name...")
                 w = 0
             else:
+                inv_dis.delete("1.0", tk.END)
                 inv_dis.insert(tk.INSERT, "\nError")
 
         elif x == "exit":
@@ -479,6 +486,7 @@ def inv_create_win():
                                card_name_entry.get(), card_exp_entry.get(), card_cvv_entry.get(), car_make_entry.get(), car_model_entry.get(),
                                car_year_entry.get(), car_color_entry.get(), issue_entry.get(), diag_repair_entry.get(), labor_hours_entry.get())
         except ValueError:
+            inv_dis.delete("1.0", tk.END)
             inv_dis.insert(tk.INSERT, "One or more entry boxes were left blank...\nPlease try again...")
 
 
@@ -649,14 +657,16 @@ def show(x):
                             invoices.append(pickle.load(i))
                             inv_num -= 1
 
+
+
+                    with open("saved_schedule.pk1", "rb") as ss:
+                         schedules.append(pickle.load(ss))
+
+                    with open("saved_inventory.pk1", "rb") as inv:
+                         inventories.append(pickle.load(inv))
+
                 except EOFError:
                     break
-
-            with open("saved_schedule.pk1", "rb") as ss:
-                 schedules.append(pickle.load(ss))
-
-            with open("saved_inventory.pk1", "rb") as inv:
-                inventories.append(pickle.load(inv))
 
         elif x == "exit":
             top.quit()
