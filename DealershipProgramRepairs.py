@@ -362,7 +362,7 @@ def invoices_window():
         elif x == "show":
             inv_dis.delete("1.0", tk.END)
             if len(invoices) > 0:
-                inv_dis.insert(tk.INSERT, "Displaying Invoices...")
+                inv_dis.insert(tk.INSERT, "Displaying Invoices...\n")
                 for e in invoices:
                     e.display_invoice()
             else:
