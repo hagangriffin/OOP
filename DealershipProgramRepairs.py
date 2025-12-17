@@ -192,8 +192,7 @@ class Scheduling:
         for n in self.wait_list:
             if n["Name"] == x:
                 self.wait_list.pop(0)
-        dis.delete("1.0", tk.END)
-        dis.insert(tk.INSERT,"Job Removed")
+
 #Check Schedule
     def check_schedule(self):
         self.total_scheduled = len(self.wait_list)
@@ -231,11 +230,11 @@ def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry
 
 #SAVE FILES-------------------------------------------------------------------------------------------------------------
 
-#invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
-#invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
+invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
+invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
 
 schedule = Scheduling()
-invoices = []
+invoices = [invent, invent2]
 schedules = [schedule]
 
 #schedule.wait_list.append({"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"})
