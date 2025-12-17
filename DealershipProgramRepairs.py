@@ -1,9 +1,106 @@
 import pickle
+import random
 import tkinter as tk
 from tkinter import *
 import openpyxl
+
 w = 0
-s= 0
+s = 0
+total_price = 0
+
+#Inventory
+
+#Check Inventory Stock
+def check_inv():
+    def update_stock_levels(filename):
+        n = 0
+        int_dis.delete("1.0", tk.END)
+        try:
+            wb = openpyxl.load_workbook(filename)
+            sheet = wb.active
+
+            headers = {cell.value.lower(): cell.column for cell in sheet[1]}
+
+            if 'parts' not in headers or 'stock' not in headers:
+                int_dis.insert(tk.INSERT,"Error: Could not find 'parts' or 'stock' columns.")
+                return
+
+            parts_col = headers['parts']
+            stock_col = headers['stock']
+
+            for row in range(2, sheet.max_row + 1):
+                stock_cell = sheet.cell(row=row, column=stock_col)
+
+                if stock_cell.value is not None and isinstance(stock_cell.value, (int, float)):
+                    if stock_cell.value < 10:
+                        stock_cell.value = 30
+                        part_name = sheet.cell(row=row, column=parts_col).value
+                        n += 1
+                        ck = True
+
+                    else:
+                        ck = False
+
+            if ck:
+                int_dis.insert(tk.INSERT,f"Updated inventory. {n} parts restocked.")
+                wb.save(filename)
+                int_dis.insert(tk.INSERT, f"\nSuccessfully updated and saved {filename}")
+            elif not ck:
+                int_dis.insert(tk.INSERT,"Stock is up to date")
+
+        except FileNotFoundError:
+            int_dis.insert(tk.INSERT,f"Error: The file '{filename}' was not found.")
+        except Exception as e:
+            int_dis.insert(tk.INSERT,f"An error occurred: {e}")
+
+    update_stock_levels('stock.xlsx')
+
+#Parts Cost
+def process_stock(filename):
+    global total_price
+    try:
+        wb = openpyxl.load_workbook(filename)
+        sheet = wb.active
+
+
+            # 2. Get all data rows (excluding the header at row 1)
+            # We use range starting from 2 to the max row
+        max_row = sheet.max_row
+        if max_row < 6:
+            inv_dis.insert(tk.INSERT,"\nNot enough items in the sheet to pick 5.")
+            return
+
+            # Pick 5 unique random row indices
+        random_indices = random.sample(range(2, max_row + 1), 5)
+
+        inv_dis.insert(tk.INSERT,"\nItems selected:")
+
+            # 3. Process the selected rows
+        for row_idx in random_indices:
+            part_name = sheet.cell(row=row_idx, column=1).value
+            current_stock = sheet.cell(row=row_idx, column=2).value
+            price = sheet.cell(row=row_idx, column=3).value
+
+                # Update the stock (minus 1)
+                # Note: In a real scenario, you might want to check if stock > 0 first
+            sheet.cell(row=row_idx, column=2).value = current_stock - 1
+
+                # Add to total
+            total_price += price
+
+            inv_dis.insert(tk.INSERT,f"\n- {part_name}: ${price} (New Stock: {current_stock - 1})")
+
+            # 4. Save the changes back to the file
+        wb.save(filename)
+
+        inv_dis.insert(tk.INSERT, f"\nTotal Price for selection: ${total_price:.2f}")
+        inv_dis.insert(tk.INSERT,f"\nChanges saved to {filename}")
+
+
+    except FileNotFoundError:
+        inv_dis.insert(tk.INSERT,f"\nError: The file '{filename}' was not found.")
+        return
+
 #Invoice Class
 
 class Invoice:
@@ -68,65 +165,10 @@ class Invoice:
 
     def display_invoice(self):
         inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
-        inv_dis.insert(tk.INSERT, f"\nName: {self.name} \nDOB: {self.dob} \nPhone: {self.phone} \nEmail: {self.email} \nCard Name: {self.card_name} \nCard Number: {self.card_number} \nCard Expiry: {self.card_expiration} \nCard CVV: {self.card_ccv} \nCar Make: {self.car_make} \nCar Model: {self.car_model} \nCar Color: {self.car_color} \nCar Year: {self.car_year} \nIssue: {self.issue} \nDiag or Repair: {self.diag_or_repair} \nEstimated Labor Hours: {self.est_labor_hrs}")
+        inv_dis.insert(tk.INSERT, f"\nName: {self.name} \nDOB: {self.dob} \nPhone: {self.phone} \nEmail: {self.email} \nCard Name: {self.card_name} \nCard Number: {self.card_number} \nCard Expiry: {self.card_expiration} \nCard CVV: {self.card_ccv} \nCar Make: {self.car_make} \nCar Model: {self.car_model} \nCar Color: {self.car_color} \nCar Year: {self.car_year} \nIssue: {self.issue} \nDiag or Repair: {self.diag_or_repair} \nEstimated Labor Hours: {self.est_labor_hrs} \nTotal Parts Cost: ${total_price}")
         inv_dis.insert(tk.INSERT,"\n--------------------------------------------")
 
-#Inventory Class
 
-class Inventory:
-    def __init__(self):
-        self.parts = {"Engine Parts": 15, "Drivetrain Parts": 15, "Electronic Parts": 15, "Interior Parts": 15, "Exterior Parts": 15, "Main Frame Parts": 15}
-        self.eng_parts_price = 200
-        self.drive_parts_price = 125
-        self.electro_parts_price = 75
-        self.int_parts_price = 100
-        self.ext_parts_price = 50
-        self.main_frame_parts_price = 175
-
-#Check Inventory Stock
-    def check_inv(self):
-        def update_stock_levels(filename):
-            n = 0
-            int_dis.delete("1.0", tk.END)
-            try:
-                wb = openpyxl.load_workbook(filename)
-                sheet = wb.active
-
-                headers = {cell.value.lower(): cell.column for cell in sheet[1]}
-
-                if 'parts' not in headers or 'stock' not in headers:
-                    int_dis.insert(tk.INSERT,"Error: Could not find 'parts' or 'stock' columns.")
-                    return
-
-                parts_col = headers['parts']
-                stock_col = headers['stock']
-
-                for row in range(2, sheet.max_row + 1):
-                    stock_cell = sheet.cell(row=row, column=stock_col)
-
-                    if stock_cell.value is not None and isinstance(stock_cell.value, (int, float)):
-                        if stock_cell.value < 10:
-                            stock_cell.value = 30
-                            part_name = sheet.cell(row=row, column=parts_col).value
-                            n += 1
-                            ck = True
-
-                        else:
-                            ck = False
-
-                if ck:
-                    int_dis.insert(tk.INSERT,f"Updated inventory. {n} parts restocked.")
-                    wb.save(filename)
-                    int_dis.insert(tk.INSERT, f"\nSuccessfully updated and saved {filename}")
-                elif not ck:
-                    int_dis.insert(tk.INSERT,"Stock is up to date")
-
-            except FileNotFoundError:
-                int_dis.insert(tk.INSERT,f"Error: The file '{filename}' was not found.")
-            except Exception as e:
-                int_dis.insert(tk.INSERT,f"An error occurred: {e}")
-
-        update_stock_levels('stock.xlsx')
 
 #Scheduling Class
 
@@ -185,17 +227,15 @@ def create_invoice(entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry
     new_inv.invoice_calc()
     invoices.append(new_inv)
 
-    inv_dis.insert(tk.INSERT, "\nInvoice Created")
+    inv_dis.insert(tk.INSERT, "Invoice Created")
 
 #SAVE FILES-------------------------------------------------------------------------------------------------------------
 
 #invent = Invoice(1,"2","3","4","5","6","7","8","9","10","11","12","13","14","15",16)
 #invent2 = Invoice(2, "asfd", "fwqef", "afav", "afewf", "asf", "feff", "awfw", "wv", "wewe", "weff", "giige", "regnre", "sns", "afasdf", 24)
 
-inventory = Inventory()
 schedule = Scheduling()
 invoices = []
-inventories = [inventory]
 schedules = [schedule]
 
 #schedule.wait_list.append({"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"})
@@ -415,7 +455,7 @@ def inventory_menu():
 
     def int_show(x):
         if x == "intcheck":
-            inventory.check_inv()
+            check_inv()
 
         elif x == "exit":
             int_men.withdraw()
@@ -440,10 +480,14 @@ def inv_create_win():
     top1.deiconify()
 
     def cr_i():
+
         try:
             create_invoice(inv_id_entry.get(), name_entry.get(), dob_entry.get(), phone_entry.get(), email_entry.get(), card_num_entry.get(),
                                card_name_entry.get(), card_exp_entry.get(), card_cvv_entry.get(), car_make_entry.get(), car_model_entry.get(),
                                car_year_entry.get(), car_color_entry.get(), issue_entry.get(), diag_repair_entry.get(), labor_hours_entry.get())
+
+            process_stock("stock.xlsx")
+
         except ValueError:
             inv_dis.delete("1.0", tk.END)
             inv_dis.insert(tk.INSERT, "One or more entry boxes were left blank...\nPlease try again...")
@@ -584,16 +628,11 @@ def show(x):
                 # noinspection PyTypeChecker
                 pickle.dump(schedules[0], s, pickle.HIGHEST_PROTOCOL)
 
-            with open("saved_inventory.pk1", "wb") as inv:
-                # noinspection PyTypeChecker
-                pickle.dump(inventories[0], inv, pickle.HIGHEST_PROTOCOL)
-
             with open("invoice_num.dat", "wb") as num:
                 # noinspection PyTypeChecker
                 pickle.dump(len(invoices), num)
 
             i.close()
-            inv.close()
             ss.close()
             num.close()
 
@@ -603,7 +642,6 @@ def show(x):
 
             invoices.clear()
             schedules.clear()
-            inventories.clear()
             with open("invoice_num.dat", "rb") as num:
                 inv_num = pickle.load(num)
 
@@ -621,9 +659,6 @@ def show(x):
 
                     with open("saved_schedule.pk1", "rb") as ss:
                          schedules.append(pickle.load(ss))
-
-                    with open("saved_inventory.pk1", "rb") as inv:
-                         inventories.append(pickle.load(inv))
 
                 except EOFError:
                     break
