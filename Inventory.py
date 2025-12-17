@@ -4,7 +4,7 @@ total_low = 0
 total_price = 0
 
 stock = file['stock']
-parts = file['part']
+parts = file['parts']
 price = file['price']
 
 stock_low_idx = file.index[stock < 15]
