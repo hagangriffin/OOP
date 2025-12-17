@@ -1,6 +1,7 @@
 import pickle
 import tkinter as tk
 from tkinter import *
+import openpyxl
 w = 0
 s= 0
 #Invoice Class
@@ -84,86 +85,48 @@ class Inventory:
 
 #Check Inventory Stock
     def check_inv(self):
-        int_dis.delete("1.0", tk.END)
-        int_dis.insert(tk.INSERT,f"Total Engine Parts: {self.parts['Engine Parts']}")
-        int_dis.insert(tk.INSERT,f"\nTotal Drivetrain Parts: {self.parts['Drivetrain Parts']}")
-        int_dis.insert(tk.INSERT,f"\nTotal Electronic Parts: {self.parts['Electronic Parts']}")
-        int_dis.insert(tk.INSERT,f"\nTotal Interior Parts: {self.parts['Interior Parts']}")
-        int_dis.insert(tk.INSERT,f"\nTotal Exterior Parts: {self.parts['Exterior Parts']}")
-        int_dis.insert(tk.INSERT,f"\nTotal Main Frame Parts: {self.parts['Main Frame Parts']}")
-        if self.parts["Engine Parts"] < 10 or self.parts["Drivetrain Parts"] < 10 or self.parts["Electronic Parts"] < 10 or self.parts["Interior Parts"] < 10 or self.parts["Exterior Parts"] < 10 or self.parts["Main Frame Parts"] < 10:
-            int_dis.insert(tk.INSERT, """\n\nStock is low... To order more click "Update Inventory" """)
-        else:
-            int_dis.insert(tk.INSERT, "\n\nStock is up to date...")
-
-#Update Inventory Stock
-    def update_inv(self):
-        order_goal = 50
-        stock_ordered = False
-        type_ordered = []
-        total_cost = 0
-        int_dis.delete("1.0", tk.END)
-
-        if self.parts["Engine Parts"] < 10:
-            eng_parts_ordered = order_goal - self.parts["Engine Parts"]
-            eng_parts_cost = inventory.eng_parts_price * eng_parts_ordered
-            int_dis.insert(tk.INSERT,f"\n\nEngine parts stock low... Ordering more stock\nCost of new stock ordered: {str(eng_parts_cost)}")
-            self.parts["Engine Parts"] += eng_parts_ordered
-            stock_ordered = True
-            type_ordered.append("Engine Parts")
-            total_cost += eng_parts_cost
-        if self.parts["Drivetrain Parts"] < 10:
-            dri_parts_ordered = order_goal - self.parts["Drivetrain Parts"]
-            dri_parts_cost = inventory.drive_parts_price * dri_parts_ordered
-            int_dis.insert(tk.INSERT,f"\n\nDrivetrain parts stock low... Ordering more stock\nCost of new stock ordered: {str(dri_parts_cost)}")
-            self.parts["Drivetrain Parts"] += dri_parts_ordered
-            stock_ordered = True
-            type_ordered.append("Drivetrain Parts")
-            total_cost += dri_parts_cost
-        if self.parts["Electronic Parts"] < 10:
-            elec_parts_ordered = order_goal - self.parts["Electronic Parts"]
-            elec_parts_cost = inventory.electro_parts_price * elec_parts_ordered
-            int_dis.insert(tk.INSERT,f"\n\nElectronic parts stock low... Ordering more stock\nCost of new stock ordered: {str(elec_parts_cost)}")
-            self.parts["Electronic Parts"] += elec_parts_ordered
-            stock_ordered = True
-            type_ordered.append("Electronic Parts")
-            total_cost += elec_parts_cost
-        if self.parts["Interior Parts"] < 10:
-            int_parts_ordered = order_goal - self.parts["Interior Parts"]
-            int_parts_cost = inventory.int_parts_price * int_parts_ordered
-            int_dis.insert(tk.INSERT,f"\n\nInterior parts stock low... Ordering more stock\nCost of new stock ordered: {str(int_parts_cost)}")
-            self.parts["Interior Parts"] += int_parts_ordered
-            stock_ordered = True
-            type_ordered.append("Interior Parts")
-            total_cost += int_parts_cost
-        if self.parts["Exterior Parts"] < 10:
-            ext_parts_ordered = order_goal - self.parts["Exterior Parts"]
-            ext_parts_cost = inventory.ext_parts_price * ext_parts_ordered
-            int_dis.insert(tk.INSERT,f"\n\nExterior parts stock low... Ordering more stock\nCost of new stock ordered: {str(ext_parts_cost)}")
-            self.parts["Exterior Parts"] += ext_parts_ordered
-            stock_ordered = True
-            type_ordered.append("Exterior Parts")
-            total_cost += ext_parts_cost
-        if self.parts["Main Frame Parts"] < 10:
-            main_parts_ordered = order_goal - self.parts["Main Frame Parts"]
-            main_parts_cost = inventory.main_frame_parts_price * main_parts_ordered
-            int_dis.insert(tk.INSERT,f"\n\nMain frame parts stock low... Ordering more stock\nCost of new stock ordered: {str(main_parts_cost)}")
-            self.parts["Main Frame Parts"] += main_parts_ordered
-            stock_ordered = True
-            type_ordered.append("Main Frame Parts")
-            total_cost += main_parts_cost
-
-        if stock_ordered:
-            int_dis.insert(tk.INSERT, f"\n\nTotal cost of parts ordered: {total_cost}")
-            int_dis.insert(tk.INSERT, "\n\nTypes of parts ordered: ")
-            for t in type_ordered:
-                int_dis.insert(tk.INSERT, f"\n{t}")
-
-        elif not stock_ordered:
+        def update_stock_levels(filename):
+            n = 0
             int_dis.delete("1.0", tk.END)
-            int_dis.insert(tk.INSERT,"No parts were needed")
+            try:
+                wb = openpyxl.load_workbook(filename)
+                sheet = wb.active
 
-        return self.parts["Engine Parts"], self.parts["Drivetrain Parts"], self.parts["Electronic Parts"], self.parts["Interior Parts"], self.parts["Exterior Parts"], self.parts["Main Frame Parts"]
+                headers = {cell.value.lower(): cell.column for cell in sheet[1]}
+
+                if 'parts' not in headers or 'stock' not in headers:
+                    int_dis.insert(tk.INSERT,"Error: Could not find 'parts' or 'stock' columns.")
+                    return
+
+                parts_col = headers['parts']
+                stock_col = headers['stock']
+
+                for row in range(2, sheet.max_row + 1):
+                    stock_cell = sheet.cell(row=row, column=stock_col)
+
+                    if stock_cell.value is not None and isinstance(stock_cell.value, (int, float)):
+                        if stock_cell.value < 10:
+                            stock_cell.value = 30
+                            part_name = sheet.cell(row=row, column=parts_col).value
+                            n += 1
+                            ck = True
+
+                        else:
+                            ck = False
+
+                if ck:
+                    int_dis.insert(tk.INSERT,f"Updated inventory. {n} parts restocked.")
+                    wb.save(filename)
+                    int_dis.insert(tk.INSERT, f"\nSuccessfully updated and saved {filename}")
+                elif not ck:
+                    int_dis.insert(tk.INSERT,"Stock is up to date")
+
+            except FileNotFoundError:
+                int_dis.insert(tk.INSERT,f"Error: The file '{filename}' was not found.")
+            except Exception as e:
+                int_dis.insert(tk.INSERT,f"An error occurred: {e}")
+
+        update_stock_levels('stock.xlsx')
 
 #Scheduling Class
 
@@ -454,9 +417,6 @@ def inventory_menu():
         if x == "intcheck":
             inventory.check_inv()
 
-        elif x == "upint":
-            inventory.update_inv()
-
         elif x == "exit":
             int_men.withdraw()
             top.deiconify()
@@ -466,9 +426,6 @@ def inventory_menu():
 
     int_exit = Button(int_men, text="Exit", width=15, height=2, command=lambda: int_show("exit"))
     int_exit.place(x=100, y=355)
-
-    int_update = Button(int_men, text="Update Inventory", width=20, height=2, command=lambda: int_show("upint"))
-    int_update.place(x=260, y=305)
 
 #INVOICE CREATOR WINDOW-------------------------------------------------------------------------------------------------
 
