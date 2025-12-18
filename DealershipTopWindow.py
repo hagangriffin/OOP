@@ -242,7 +242,8 @@ schedule = Scheduling()
 invoices = [invent, invent2]
 schedules = [schedule]
 
-#schedule.wait_list.append({"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"})
+schedule.wait_list.append({"Name": "Hagan", "Phone": "5013948846", "Email": "haganzgriffin@gmail.com"})
+schedule.wait_list.append({"Name": "Jorge", "Phone": "23456236346", "Email": "jorge@gmail.com"})
 
 #MAIN MENU--------------------------------------------------------------------------------------------------------------
 
@@ -315,13 +316,9 @@ def schedule_window():
                         sch_dis.insert(tk.INSERT, "No items in schedule matching search term...")
                 s = 0
             elif s == 2:
-                for e in schedules[0].wait_list:
-                    if e["Name"] == get_ent:
-                        sch_dis.delete("1.0", tk.END)
-                        sch_dis.insert(tk.INSERT, "Name: " + e["Name"] + "\nPhone: " + e["Phone"] + "\nEmail: " + e["Email"])
-                    else:
-                        sch_dis.delete("1.0", tk.END)
-                        sch_dis.insert(tk.INSERT, "No items in schedule matching search term...")
+                result = [person for person in schedule.wait_list if person["Name"].lower() == get_ent.lower()]
+                sch_dis.delete("1.0", tk.END)
+                sch_dis.insert(tk.INSERT, "Name: " + str(result[0]["Name"]) + "\nPhone: " + str(result[0]["Phone"]) + "\nEmail: " + str(result[0]["Email"]))
                 s = 0
 
         elif x == "sersh":
